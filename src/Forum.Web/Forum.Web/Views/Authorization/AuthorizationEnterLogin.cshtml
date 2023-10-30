@@ -1,0 +1,22 @@
+﻿
+
+<div class="containerMain containerBorder">
+    <div class="form border mx-auto text-center position-absolute top-50 start-50 translate-middle">
+        <p class="display-6 mt-3">Authorization</p>
+        <form method="post" asp-controller="Authorization" asp-action="CheckIfPasswordSetRequired">
+            <div class="row-2 form-group">
+                <label class="form-label">Email</label>
+                <input type="email" name="email" class="form-control border border-success" placeholder="Email" required="required" />
+            </div>
+            <div class="row-2">
+                <button type="submit" class="btn btn-outline-info mt-3">Ok</button>
+            </div>
+        </form>
+        <div class="row-2">
+            <a class="link link-info mt-3" asp-controller="Authorization" asp-action="Login">Don`t have an account yet? Sign Up!</a>
+        </div>
+        <div>
+            <a class="link link-light mt-3" asp-controller="Home" asp-action="Index">Back to the main page</a>
+        </div>
+    </div>
+</div>

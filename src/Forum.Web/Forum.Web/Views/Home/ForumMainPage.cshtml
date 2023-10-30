@@ -4,7 +4,7 @@
             <li class="nav-item" role="presentation">
                 <button class="nav-link active" aria-current="page" id="home-tab" data-bs-toggle="tab" data-bs-target="#home-tab-pane" type="button" role="tab" aria-controls="home-tab-pane" aria-selected="true">All topics</button>
             </li>
-            <li class="nav-item" role="presentation">
+            <li class="nav-item">
                 <button class="nav-link" aria-current="page" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile-tab-pane" type="button" role="tab" aria-controls="profile-tab-pane" aria-selected="false">Second tab</button>
             </li>
         </ul>
@@ -33,16 +33,12 @@
                     </ul>
                 </div>
             </div>
-            <div class="tab-pane fade" id="profile-tab-pane" role="tabpanel" aria-labelledby="profile-tab" tabindex="0">
+            <div class="tab-pane fade" id="profile-tab-pane" role="tabpanel" aria-labelledby="profile-tab" tabindex="0"> 
                 <div>
                     <hr style="height: 3px;" />
                 </div>
                 <p>Other</p>
             </div>
         </div>
-    </div>
-    <div class="loginRequestMessage">
-        <span> Please, log into your account to continue. <a asp-controller="Authorization" asp-action="EnterLogin"> Sign In!</a> </span><br />
-        <span> Don`t have an account yet? <a asp-controller="Registration" asp-action="SignUp"> Sign Up!</a></span>
     </div>
 </div>

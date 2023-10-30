@@ -18,5 +18,107 @@ html {
 }
 
 body {
-  margin-bottom: 60px;
+    margin-bottom: 60px;
+    background-color: #232426;
 }
+
+.containerMain {
+    width: 100%;
+    height: 600px;
+    background-color: #3f4552;
+    border-radius: 10px;
+}
+
+.nav-tabs, .breadcrumb, .pagination{
+    padding: 10px;
+}
+
+hr {
+    background: linear-gradient(to right, #017b7d, #34f7fa, #017b7d);
+}
+
+.list-group{
+    padding-right: 10px;
+    padding-left: 10px;
+}
+
+.loginRequestMessage {
+    text-align: center;
+    color: indianred;
+}
+
+a {
+    color: #34f7fa;
+}
+
+.pagination > .active > a {
+    color: white;
+    background-color: #017b7d !Important;
+    border: solid 1px #017b7d !Important;
+}
+
+.pagination > .active > a:hover {
+    background-color: #5A4181 !Important;
+    border: solid 1px #5A4181;
+}
+
+.pagination > li > a:focus,
+.pagination > li > a:hover,
+.pagination > li > span:focus,
+.pagination > li > span:hover {
+    color: white;
+    background-color: #5A4181;
+    border-color: #ddd;
+}
+
+.list-group-item {
+    background: rgba(101, 111, 133, 0.2);
+    color: white;
+}
+
+.list-group-hover .list-group-item:hover {
+    background-color: rgba(149, 164, 196, 0.2);
+}
+
+.nav-tabs .nav-item .nav-link {
+    background-color: rgba(101, 111, 133, 0.2);
+    color: white;
+}
+.nav-tabs .nav-item .nav-link.active {
+    color: white;
+    background-color: rgba(149, 164, 196, 0.5);
+}
+
+.navbar {
+    background-color: #3f4552 !important;
+}
+
+.nav-link{
+    color: white !important;
+}
+
+.form {
+    width: 50%;
+    border-radius: 10px;
+    background: rgba(101, 111, 133, 0.2);
+    padding-bottom: 10px;
+}
+
+.form:hover {
+    background-color: rgba(149, 164, 196, 0.5);
+}
+
+.form-label, p{
+    color: white;
+}
+
+.form-group{
+    padding-left: 40px;
+    padding-right: 40px;
+}
+
+.containerBorder {
+    border: solid 5px #017b7d;
+}
+
+
