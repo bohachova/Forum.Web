@@ -3,7 +3,7 @@ using Forum.Web.Enums;
 
 namespace Forum.Web.Models.User
 {
-    public class UserModel
+    public class User
     {
         public int Id { get; set; }
         [Required]
@@ -12,11 +12,14 @@ namespace Forum.Web.Models.User
         [Required]
         [EmailAddress]
         public string Email { get; set; } = string.Empty;
-        [Required]
-        [StringLength(30, MinimumLength = 8)]
-        public string Password { get; set; } = string.Empty;
         public UserRole UserRole { get; set; }
-        public DateTime RegistrationDate { get; set; } 
-        public string UserPhoto { get; set; } = string.Empty;
+        public DateTime RegistrationDate { get; set; }
+        public string? UserPhoto { get; set; }
+        public string? FirstName { get; set; }
+        public string? LastName { get; set; }
+        public string? Country { get; set; }
+        public string? City { get; set; }
+        public DateTime? DateOfBirth { get; set; }
+        public string? About { get; set; }
     }
 }

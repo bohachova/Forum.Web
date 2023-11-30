@@ -1,0 +1,115 @@
+﻿@model User;
+
+<div class="containerMain containerBorder">
+    <div class="form border mx-auto text-center position-absolute top-50 start-50 translate-middle">
+        @using (Html.BeginForm("EditUserProfile", "UserProfiles"))
+        {
+            <p class="display-6 mt-3">User Profile</p>
+            <div>
+                <div>
+                    @Html.HiddenFor(x=> x.Id)
+                    @Html.HiddenFor(x=> x.UserRole)
+                    @Html.HiddenFor(x=> x.RegistrationDate)
+                    
+                </div>
+                @if(Model.UserPhoto != null)
+                {
+                    <div class="row-2 form-group">
+                        <img src="data:image/jpeg;base64,@Model.UserPhoto" class="img-fluid" style="width: 100px;"><br>
+                        @if(User.IsInRole("Admin"))
+                        {
+                            <a asp-controller="UserProfiles" asp-action="ViewUserPhoto" asp-route-userId="@Model.Id">Change profile photo</a>
+                        }
+                        else
+                        {
+                            <a asp-controller="UserProfiles" asp-action="ViewMyPhoto">Change profile photo</a>
+                        }
+                    </div>
+                }
+                else
+                {
+                    @if(User.IsInRole("User"))
+                    {
+                        <a class="btn btn-outline-info" asp-controller="UserProfiles" asp-action="ViewMyPhoto"> Upload Photo </a>
+                    }
+                }
+                    
+                <div class="row row-cols-2">
+                    <div class="column">
+                        <div class="row-2 form-group">
+                            <label class="form-label">Username</label>
+                            <span asp-validation-for="Username"></span>
+                            @Html.TextBoxFor(x=> x.Username, null, new { @class="form-control border border-success" })
+                        </div>
+                    </div>
+                    <div class="column">
+                        <div class="row-2 form-group">
+                            <label class="form-label">Email</label>
+                            <span asp-validation-for="Email"></span>
+                            @Html.TextBoxFor(x=> x.Email, null, new { @class="form-control border border-success", @readonly="readonly" })
+                        </div>
+                    </div>
+                    <div class="column">
+                        <div class="row-2 form-group">
+                            <label class="form-label">Name</label>
+                            @Html.TextBoxFor(x=> x.FirstName, null, new { @class="form-control border border-success", placeholder="Name" })
+                        </div>
+                    </div>
+                    <div class="column">
+                        <div class="row-2 form-group">
+                            <label class="form-label">Lastname</label>
+                            @Html.TextBoxFor(x=> x.LastName, null, new { @class="form-control border border-success", placeholder="Lastname" })
+                        </div>
+                    </div>
+                    <div class="column">
+                        <div class="row-2 form-group">
+                            <label class="form-label">Country</label>
+                            @Html.TextBoxFor(x=> x.Country, null, new { @class="form-control border border-success", placeholder="Country" })
+                        </div>
+                    </div>
+                    <div class="column">
+                        <div class="row-2 form-group">
+                            <label class="form-label">City</label>
+                            @Html.TextBoxFor(x=> x.City, null, new { @class="form-control border border-success", placeholder="City" })
+                        </div>
+                    </div>
+                    <div class="column">
+                        <div class="row-2 form-group">
+                            <label class="form-label">Date of Birth</label>
+                            @Html.TextBoxFor(x=> x.DateOfBirth, "{0:yyyy-MM-dd}", new { @class="form-control border border-success", @type="date" })
+                        </div>
+                    </div>
+                    <div class="column">
+                        <div class="row-2 form-group">
+                            <label class="form-label">About</label>
+                            @Html.TextBoxFor(x=> x.About, null, new { @class="form-control border border-success", placeholder="About" })
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div  style="display : inline">
+                <button type="submit" class="btn btn-outline-info mt-3">Edit Profile</button>
+                @if (User.IsInRole("Admin") && User.Claims.FirstOrDefault(x => x.Type == "UserId").Value != Model.Id.ToString())
+                {
+                    <div style="display : inline">
+                        <a class="btn btn-outline-light mt-3" asp-controller="UserProfiles" asp-action="GetAllProfiles" asp-route-pageNumber="1">Back to list</a>
+                    </div>
+                }
+                else
+                {
+                    <div style="display : inline">
+                        <a class="btn btn-outline-light mt-3" asp-controller="Home" asp-action="Index">Back to home page</a>
+                    </div>
+                }
+            </div>
+        }
+        <div>
+            @if (ViewBag.ErrorMessage != null)
+            {
+                <div class="alert alert-danger" role="alert">
+                    @ViewBag.ErrorMessage
+                </div>
+            }
+        </div>
+    </div>
+</div>

@@ -26,25 +26,31 @@ namespace Forum.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> SignUp(UserRegistrationModel model)
         {
-            var result = await forumAPI.CreateUser(model);
-            if(result.IsSuccess)
+            if(ModelState.IsValid)
             {
-                var jwt = new JwtSecurityTokenHandler().ReadJwtToken(result.JWTToken);
-                List<Claim> claims = new List<Claim>() { 
-                    new Claim(ClaimTypes.Name, jwt.Claims.First(x=>x.Type == ClaimTypes.Name).Value), 
+                var result = await forumAPI.CreateUser(model);
+                if (result.IsSuccess)
+                {
+                    var jwt = new JwtSecurityTokenHandler().ReadJwtToken(result.JWTToken);
+                    List<Claim> claims = new List<Claim>() {
+                    new Claim(ClaimTypes.Name, jwt.Claims.First(x=>x.Type == ClaimTypes.Name).Value),
                     new Claim(ClaimTypes.Role, jwt.Claims.First(x => x.Type == ClaimTypes.Role).Value),
-                    new Claim("JWTToken", result.JWTToken)
+                    new Claim("JWTToken", result.JWTToken),
+                    new Claim("UserId", jwt.Claims.First(x=> x.Type == "UserId").Value)
                 };
-                ClaimsIdentity claimsId = new ClaimsIdentity(claims, "ApplicationCookie", ClaimsIdentity.DefaultNameClaimType, ClaimsIdentity.DefaultRoleClaimType);
-                DateTimeOffset expirationTime = DateTimeOffset.Now.AddDays(1);
-                await accessor.HttpContext!.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsId), new AuthenticationProperties { ExpiresUtc = expirationTime });
-                return RedirectToAction("ForumMainPage", "Home");
+                    ClaimsIdentity claimsId = new ClaimsIdentity(claims, "ApplicationCookie", ClaimsIdentity.DefaultNameClaimType, ClaimsIdentity.DefaultRoleClaimType);
+                    DateTimeOffset expirationTime = DateTimeOffset.Now.AddDays(1);
+                    await accessor.HttpContext!.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsId), new AuthenticationProperties { ExpiresUtc = expirationTime });
+                    return RedirectToAction("ForumMainPage", "Home");
+                }
+                else
+                {
+                    ViewBag.ErrorMessage = result.Message;
+                    return View("RegistrationForm", model);
+                }
             }
-            else
-            {
-                ViewBag.ErrorMessage = result.Message;
-                return View("RegistrationForm", model);
-            }
+            ViewBag.ErrorMessage = "Invalid data entered";
+            return View("RegistrationForm", model);
         }
     }
 }

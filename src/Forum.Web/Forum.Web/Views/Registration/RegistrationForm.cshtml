@@ -14,12 +14,12 @@
                 <div class="row-2 form-group">
                     <label class="form-label">Email</label>
                     <span asp-validation-for="Email"></span>
-                    @Html.TextBoxFor(x=> x.Email, null, new { @class="form-control border border-success", placeholder="Email" })
+                    @Html.TextBoxFor(x=> x.Email, null, new { @class="form-control border border-success", placeholder="Email", required="true" })
                 </div>
                 <div class="row-2 form-group">
                     <label class="form-label">Password</label>
                     <span asp-validation-for="Password"></span>
-                    @Html.PasswordFor(x=> x.Password, new { @class="form-control border border-success", placeholder="Password" })
+                    @Html.PasswordFor(x=> x.Password, new { @class="form-control border border-success", placeholder="Password", required="true" })
                 </div>
             </div>
             <div class="row-2">

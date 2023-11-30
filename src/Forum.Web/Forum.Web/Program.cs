@@ -1,7 +1,7 @@
 using Forum.Web.Interfaces;
 using Forum.Web.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.Extensions.Http;
+using System.Net.Http.Headers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,7 +18,8 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
     x.Cookie.Name = "my_web_site";
 });
 
-builder.Services.AddHttpClient<IForumAPI, ForumAPIClient>(client => client.BaseAddress = new Uri(builder.Configuration["API"]));
+builder.Services.AddHttpClient<IForumAPI, ForumAPIClient>(
+    client => client.BaseAddress = new Uri(builder.Configuration["API"]));
 
 var app = builder.Build();
 

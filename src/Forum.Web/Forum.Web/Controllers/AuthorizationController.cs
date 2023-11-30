@@ -31,7 +31,7 @@ namespace Forum.Web.Controllers
             var required = await forumAPI.CheckIfPasswordSetRequired(email);
             if (required)
             {
-                return RedirectToAction("SetPassword");
+                return RedirectToAction("SetPassword", "Authorization", new { email });
             }
             else
             {
@@ -55,7 +55,8 @@ namespace Forum.Web.Controllers
                 List<Claim> claims = new List<Claim>() { 
                     new Claim(ClaimTypes.Name, jwt.Claims.First(x => x.Type == ClaimTypes.Name).Value), 
                     new Claim(ClaimTypes.Role, jwt.Claims.First(x => x.Type == ClaimTypes.Role).Value),
-                    new Claim("JWTToken", result.JWTToken)
+                    new Claim("JWTToken", result.JWTToken),
+                    new Claim("UserId", jwt.Claims.First(x=> x.Type == "UserId").Value)
                 };
                 ClaimsIdentity claimsId = new ClaimsIdentity(claims, "ApplicationCookie", ClaimsIdentity.DefaultNameClaimType, ClaimsIdentity.DefaultRoleClaimType);
                 DateTimeOffset expirationTime = DateTimeOffset.Now.AddDays(1);
@@ -71,8 +72,8 @@ namespace Forum.Web.Controllers
         [HttpGet]
         public IActionResult SetPassword (string email)
         {
-            ViewBag.Email = email;
-            return View("SetAdminPassword");
+            var model = new UserAuthorizationModel { Email = email };
+            return View("SetAdminPassword", model);
         }
         [HttpPost]
         public async Task<IActionResult> SetPassword(UserAuthorizationModel model)
@@ -84,7 +85,8 @@ namespace Forum.Web.Controllers
                 List<Claim> claims = new List<Claim>() { 
                     new Claim(ClaimTypes.Name, jwt.Claims.First(x => x.Type == ClaimTypes.Name).Value), 
                     new Claim(ClaimTypes.Role, jwt.Claims.First(x => x.Type == ClaimTypes.Role).Value),
-                    new Claim("JWTToken", result.JWTToken)
+                    new Claim("JWTToken", result.JWTToken),
+                    new Claim("UserId", jwt.Claims.First(x=> x.Type == "UserId").Value)
                 };
                 ClaimsIdentity claimsId = new ClaimsIdentity(claims, "ApplicationCookie", ClaimsIdentity.DefaultNameClaimType, ClaimsIdentity.DefaultRoleClaimType);
                 DateTimeOffset expirationTime = DateTimeOffset.Now.AddDays(1);

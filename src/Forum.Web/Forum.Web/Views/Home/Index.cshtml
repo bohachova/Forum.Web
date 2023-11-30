@@ -1,43 +1,35 @@
 ﻿<div class="containerMain">
     <div>
-        <ul class="nav nav-tabs" id="myTab" role="tablist">
-            <li class="nav-item" role="presentation">
-                <button class="nav-link active" aria-current="page" id="home-tab" data-bs-toggle="tab" data-bs-target="#home-tab-pane" type="button" role="tab" aria-controls="home-tab-pane" aria-selected="true">All topics</button>
+        <ul class="nav nav-tabs">
+            <li class="nav-item">
+                <a class="nav-link active" aria-current="page" asp-controller="Home" asp-action="Index">All topics</a>
             </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link" aria-current="page" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile-tab-pane" type="button" role="tab" aria-controls="profile-tab-pane" aria-selected="false">Second tab</button>
+            <li class="nav-item">
+                <a class="nav-link" aria-current="page" href="#">Second tab</a>
             </li>
         </ul>
-        <div class="tab-content" id="myTabContent">
-            <div class="tab-pane fade show active" id="home-tab-pane" role="tabpanel" aria-labelledby="home-tab" tabindex="0">
-                <div>
-                    <hr style="height: 3px;" />
-                </div>
-                <div>
-                    <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
-                        <ol class="breadcrumb">
-                            <li class="breadcrumb-item active" aria-current="page">
-                                <a href="#">Forum</a>
-                            </li>
-                        </ol>
-                    </nav>
-                </div>
-                <div>
-                    <ul class="list-group list-group-hover">
-                        <li class="list-group-item">
-                            Item
-                        </li>
-                        <li class="list-group-item">
-                            Item
-                        </li>
-                    </ul>
-                </div>
+        <div>
+            <div>
+                <hr style="height: 3px;" />
             </div>
-            <div class="tab-pane fade" id="profile-tab-pane" role="tabpanel" aria-labelledby="profile-tab" tabindex="0">
-                <div>
-                    <hr style="height: 3px;" />
-                </div>
-                <p>Other</p>
+            <div>
+                <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item active" aria-current="page">
+                            <a href="#">Forum</a>
+                        </li>
+                    </ol>
+                </nav>
+            </div>
+            <div>
+                <ul class="list-group list-group-hover">
+                    <li class="list-group-item">
+                        Item
+                    </li>
+                    <li class="list-group-item">
+                        Item
+                    </li>
+                </ul>
             </div>
         </div>
     </div>

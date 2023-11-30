@@ -1,13 +1,15 @@
 ﻿using Forum.Web.Interfaces;
+using Forum.Web.Models.Pagination;
 using Forum.Web.Models.Responses;
 using Forum.Web.Models.User;
 using Newtonsoft.Json;
+using System.Net.Http.Headers;
 
 namespace Forum.Web.Services
 {
     public class ForumAPIClient : IForumAPI
     {
-        //Typed HttpClient
+
         private readonly HttpClient client;
         public ForumAPIClient(HttpClient client)
         {
@@ -44,6 +46,67 @@ namespace Forum.Web.Services
             var response = await client.PostAsync($"{client.BaseAddress}Auth/AdminStart", content);
             string s = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<AuthResponse>(s);
+        }
+
+        public async Task<PaginatedList<User>> GetAllProfiles(PaginationSettings settings, string token)
+        {
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            HttpContent content = JsonContent.Create(settings);
+            var response = await client.PostAsync($"{client.BaseAddress}Profiles/AllUsers", content);
+            string s = await response.Content.ReadAsStringAsync();
+            var list = JsonConvert.DeserializeObject<PaginatedList<User>>(s);
+            return JsonConvert.DeserializeObject<PaginatedList<User>>(s);
+        }
+
+        public async Task<User> GetUserProfile(int userId, string token)
+        {
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            var response = await client.GetAsync($"{client.BaseAddress}Profiles/UserProfile/{userId}");
+            string s = await response.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<User>(s);
+        }
+
+        public async Task<User?> EditUserProfile(User model, string token)
+        {
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            HttpContent content = JsonContent.Create(model);
+            var response = await client.PostAsync($"{client.BaseAddress}Profiles/EditProfile", content);
+            if(response.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                string s = await response.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<User>(s);
+            }
+            else
+                return null;
+        }
+
+        public async Task<Response> SetUserPhoto(int userId, Stream fileStream, string fileName, string imageType, string token)
+        {
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            FormFile formFile = new(fileStream, 0, fileStream.Length, fileName, fileName)
+            {
+                Headers = new HeaderDictionary(),
+                ContentType = imageType
+            };
+
+            MultipartFormDataContent content = new()
+            {
+                { new StreamContent(fileStream), "file", fileName }
+            };
+
+            var response = await client.PostAsync($"{client.BaseAddress}Profiles/SetUserPhoto/{userId}", content);
+            string s = await response.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<Response>(s);
+        }
+
+        public async Task<Response> DeleteUserPhoto (int userId, string token)
+        {
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            var response = await client.GetAsync($"{client.BaseAddress}Profiles/DeleteUserPhoto/{userId}");
+            string s = await response.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<Response>(s);
         }
     }
 }

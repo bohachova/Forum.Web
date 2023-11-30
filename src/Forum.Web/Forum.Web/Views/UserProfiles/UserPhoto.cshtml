@@ -1,0 +1,79 @@
+﻿
+<div class="containerMain containerBorder">
+    <div class="form border mx-auto text-center position-absolute top-50 start-50 translate-middle">
+        <p class="display-6 mt-3">Profile photo</p>
+        @if(ViewBag.UserPhoto != null)
+        {
+            <img src="data:image/jpeg;base64,@ViewBag.UserPhoto" class="img-fluid" style="width: 200px;">
+        }
+        else
+        {
+            <p> No photo yet</p>
+        }
+        <p class="d-inline-flex gap-1">
+            @if(User.IsInRole("User"))
+            {
+                <a class="btn btn-outline-info" data-bs-toggle="collapse" href="#uploadForm" role="button" aria-expanded="false" aria-controls="uploadForm"> Upload New Photo</a>
+            }
+            <a class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteConfirmModal"> Delete Photo </a>
+        </p>
+        <p>
+            @if(User.IsInRole("Admin"))
+            {
+                <a class="link link-light mt-3" asp-controller="UserProfiles" asp-action="GetUserProfile" asp-route-userId="@ViewBag.UserId"> Back to profile</a>
+            }
+            else
+            {
+                <a class="link link-light mt-3" asp-controller="UserProfiles" asp-action="GetMyProfile"> Back to profile</a>
+            }
+        </p>
+        <div class="collapse" id="uploadForm">
+            <div class="card card-body">
+                <form method="post" asp-controller="UserProfiles" asp-action="SetMyPhoto" enctype="multipart/form-data">
+                    <input class="form-control" type="file" name="file" id="formFile">
+                    <button type="submit" class="btn btn-outline-secondary mt-3"> Ok </button>
+                </form>
+            </div>
+        </div>
+       
+        <div>
+            @if (ViewBag.Error != null)
+            {
+                <div class="alert alert-danger" role="alert">
+                    @ViewBag.Error
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-labelledby="deleteConfirmModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="deleteConfirmModalLabel">Please, confirm to delete</h1>
+            </div>
+            <div class="modal-body">
+                Do you really want to delete the profile photo?
+            </div>
+            <div class="modal-footer">
+                @if(User.IsInRole("Admin"))
+                {
+                    <form method="post" asp-controller="UserProfiles" asp-action="DeleteUserPhoto" enctype="multipart/form-data">
+                        <input type="hidden" name="userId" value="@ViewBag.UserId" />
+                        <button type="submit" class="btn btn-outline-danger">Delete</button>
+                    </form>
+                }
+                else
+                {
+                    <button asp-controller="UserProfiles" asp-action="DeleteMyPhoto" class="btn btn-outline-danger">Delete</button>
+                }
+                <button class="btn btn-outline-secondary" data-bs-dismiss="modal"> Cancel </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/imageValidator.js" asp-append-version="true"></script>
+}
