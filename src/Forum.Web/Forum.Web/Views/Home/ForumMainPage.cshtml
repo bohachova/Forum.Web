@@ -1,4 +1,5 @@
-﻿
+﻿@model PaginatedList<Topic>
+
 <div class="containerMain">
     <div>
         <ul class="nav nav-tabs">
@@ -20,21 +21,67 @@
                 <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item active" aria-current="page">
-                            <a href="#">Forum</a>
+                            <a asp-controller="Home" asp-action="Index">Forum</a>
                         </li>
                     </ol>
                 </nav>
             </div>
-            <div>
-                <ul class="list-group list-group-hover">
-                    <li class="list-group-item">
-                        Item
-                    </li>
-                    <li class="list-group-item">
-                        Item
-                    </li>
-                </ul>
-            </div>
+            @if(Model.Items.Any())
+            {
+                <div>
+                    <ul class="list-group list-group-hover">
+                        @foreach (var topic in Model.Items)
+                        {
+                            <li class="list-group-item">
+                                <div class="row">
+                                    <div class="col" style="display:inline">
+                                        @topic.Name
+                                    </div>
+                                    <div class="col" style="display:inline">
+                                        <a class="btn btn-outline-info" asp-controller="TopicsController" asp-action="GetTopicPosts" asp-route-pageNumber="1" asp-route-topicId="@topic.Id" asp-route-topicName="@topic.Name">View</a>
+                                    </div>
+                                </div>
+                            </li>
+                        }
+                    </ul>
+                </div>
+                int prevPageLink = Model.HasPreviousPage ? Model.PageIndex - 1 : 1;
+                int nextPageLink = Model.HasNextPage ? Model.PageIndex + 1 : Model.TotalPages;
+                <div class="pagination justify-content-center m-3">
+                    @if (Model.HasPreviousPage)
+                    {
+                        <a asp-controller="Home" asp-action="ForumMainPage" asp-route-pageNumber="@(prevPageLink)" aria-label="Previous">
+                            <span aria-hidden="true">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-chevron-double-left" viewBox="0 0 16 16">
+                                    <path fill-rule="evenodd" d="M8.354 1.646a.5.5 0 0 1 0 .708L2.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z" />
+                                    <path fill-rule="evenodd" d="M12.354 1.646a.5.5 0 0 1 0 .708L6.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z" />
+                                </svg>
+                            </span>
+                        </a>
+                    }
+                    @for (int i = 1; i <= Model.TotalPages; i++)
+                    {
+                        <a style="height:20px; width: 20px; margin: 3px;" asp-controller="Home" asp-action="ForumMainPage" asp-route-pageNumber="@i">@i</a>
+                    }
+                    @if (Model.HasNextPage)
+                    {
+                        <a asp-controller="Home" asp-action="ForumMainPage" asp-route-pageNumber="@(nextPageLink)" aria-label="Next">
+                            <span aria-hidden="true">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-chevron-double-right" viewBox="0 0 16 16">
+                                    <path fill-rule="evenodd" d="M3.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L9.293 8 3.646 2.354a.5.5 0 0 1 0-.708z" />
+                                    <path fill-rule="evenodd" d="M7.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L13.293 8 7.646 2.354a.5.5 0 0 1 0-.708z" />
+                                </svg>
+                            </span>
+                        </a>
+                    }
+                </div>
+            }
+            else
+            {
+                <div>
+                    <p>No users yet </p>
+                </div>
+            }
         </div>
     </div>
 </div>

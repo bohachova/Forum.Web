@@ -1,6 +1,7 @@
 ﻿using Forum.Web.Models.User;
 using Forum.Web.Models.Responses;
 using Forum.Web.Models.Pagination;
+using Forum.Web.Models.TopicPost;
 
 namespace Forum.Web.Interfaces
 {
@@ -15,5 +16,9 @@ namespace Forum.Web.Interfaces
         Task<User?> EditUserProfile(User user, string token);
         Task<Response> SetUserPhoto(int userId, Stream fileStream, string fileName, string imageType, string token);
         Task<Response> DeleteUserPhoto(int userId, string token);
+        Task<PaginatedList<Topic>> GetTopicsList(PaginationSettings settings);
+        Task<PaginatedList<Post>> GetTopicPosts (PaginationSettings settings, int topicId, string token);
+        Task<Response> CreateTopic(Topic topic, string token);
+        Task<Response> CreatePost (PostCreationModel post, string token);
     }
 }

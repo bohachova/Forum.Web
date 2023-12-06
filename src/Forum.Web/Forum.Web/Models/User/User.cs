@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Forum.Web.Enums;
+using Forum.Web.Models.TopicPost;
 
 namespace Forum.Web.Models.User
 {
@@ -21,5 +22,7 @@ namespace Forum.Web.Models.User
         public string? City { get; set; }
         public DateTime? DateOfBirth { get; set; }
         public string? About { get; set; }
+        public List<Topic> CreatedTopics { get; set; } = new List<Topic>();
+        public List<Post> Posts { get; set; } = new List<Post>();
     }
 }

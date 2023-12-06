@@ -1,6 +1,7 @@
 ﻿using Forum.Web.Interfaces;
 using Forum.Web.Models.Pagination;
 using Forum.Web.Models.Responses;
+using Forum.Web.Models.TopicPost;
 using Forum.Web.Models.User;
 using Newtonsoft.Json;
 using System.Net.Http.Headers;
@@ -54,7 +55,6 @@ namespace Forum.Web.Services
             HttpContent content = JsonContent.Create(settings);
             var response = await client.PostAsync($"{client.BaseAddress}Profiles/AllUsers", content);
             string s = await response.Content.ReadAsStringAsync();
-            var list = JsonConvert.DeserializeObject<PaginatedList<User>>(s);
             return JsonConvert.DeserializeObject<PaginatedList<User>>(s);
         }
 
@@ -105,6 +105,41 @@ namespace Forum.Web.Services
         {
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
             var response = await client.GetAsync($"{client.BaseAddress}Profiles/DeleteUserPhoto/{userId}");
+            string s = await response.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<Response>(s);
+        }
+
+        public async Task<PaginatedList<Topic>> GetTopicsList(PaginationSettings settings)
+        {
+            HttpContent content = JsonContent.Create(settings);
+            var response = await client.PostAsync($"{client.BaseAddress}Topics/AllTopics", content);
+            string s = await response.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<PaginatedList<Topic>>(s);
+        }
+
+        public async Task<PaginatedList<Post>> GetTopicPosts(PaginationSettings settings, int topicId, string token)
+        {
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            HttpContent content = JsonContent.Create(settings);
+            var response = await client.PostAsync($"{client.BaseAddress}Topics/Posts/{topicId}", content);
+            string s = await response.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<PaginatedList<Post>>(s);
+        }
+
+        public async Task<Response> CreateTopic(Topic topic, string token)
+        {
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            HttpContent content = JsonContent.Create(topic);
+            var response = await client.PostAsync($"{client.BaseAddress}Topics/NewTopic", content);
+            string s = await response.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<Response>(s);
+        }
+
+        public async Task<Response> CreatePost(PostCreationModel post, string token)
+        {
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            HttpContent content = JsonContent.Create(post);
+            var response = await client.PostAsync($"{client.BaseAddress}Topics/NewPost", content);
             string s = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<Response>(s);
         }

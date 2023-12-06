@@ -4,10 +4,6 @@ using Forum.Web.Models.Pagination;
 using Forum.Web.Models.User;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.IO.IsolatedStorage;
-using System.Reflection;
-using System.Security.Claims;
-using System.Security.Principal;
 
 namespace Forum.Web.Controllers
 {
