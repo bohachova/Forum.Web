@@ -4,7 +4,7 @@ using Forum.Web.Models.TopicPost;
 
 namespace Forum.Web.Models.User
 {
-    public class User
+    public class UserModel
     {
         public int Id { get; set; }
         [Required]

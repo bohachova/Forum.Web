@@ -16,46 +16,33 @@ namespace Forum.Web.Controllers
         }
         [Authorize]
         [HttpGet]
-        public async Task<IActionResult> GetTopicPosts(int pageNumber, int topicId, string topicName)
+        public async Task<IActionResult> GetTopicPosts(int pageNumber, int topicId, string topicTitle)
         {
             var token = User.GetToken();
-            var result = await forumAPI.GetTopicPosts(new PaginationSettings { PageNumber = pageNumber}, topicId, token);
+            var result = await forumAPI.GetTopicPosts(new PaginationSettings { PageNumber = pageNumber, PageSize = 5}, topicId, token);
             ViewBag.TopicId = topicId;
-            ViewBag.TopicName = topicName;
+            ViewBag.TopicTitle = topicTitle;
             return View("Posts", result);
         }
         [Authorize(Roles ="Admin")]
-        [HttpGet]
-        public IActionResult CreateTopic()
-        {
-            return View("NewTopicForm");
-        }
-        [Authorize(Roles ="Admin")]
         [HttpPost]
-        public async Task<IActionResult> CreateTopic(Topic topic)
+        public async Task<IActionResult> CreateTopic(string topicTitle, int pageNumber)
         {
             if(ModelState.IsValid)
             {
                 var token = User.GetToken();
-                var result = await forumAPI.CreateTopic(topic, token);
+                var userId = User.GetUserId();
+                var result = await forumAPI.CreateTopic(new Topic { AuthorId = userId, Title = topicTitle}, token);
                 if (result.IsSuccess)
                 {
-                    ViewBag.Success = "New topic was created!";
+                    return RedirectToAction("ForumMainPage", "Home", new {pageNumber = pageNumber});
                 }
             }
-            ViewBag.Error = "Creation failed!";
-            return View("NewTopicForm", topic);
-
-        }
-        [Authorize]
-        [HttpGet]
-        public IActionResult CreatePost()
-        {
-            return PartialView("NewPostForm");
+            return BadRequest();
         }
         [Authorize]
         [HttpPost]
-        public async Task<IActionResult> CreatePost(PostCreationModel post)
+        public async Task<IActionResult> CreatePost(PostCreationModel post, int pageNumber, int topicId, string topicTitle)
         {
             var token = User.GetToken();
             if(ModelState.IsValid)
@@ -63,11 +50,10 @@ namespace Forum.Web.Controllers
                 var result = await forumAPI.CreatePost(post, token);
                 if (result.IsSuccess)
                 {
-                    ViewBag.Success = "New post was created!";
+                    return RedirectToAction("GetTopicPosts", new {pageNumber = pageNumber, topicId = topicId, topicTitle = topicTitle});
                 }
             }
-            ViewBag.Error = "Creation failed!";
-            return PartialView("NewPostForm", post);
+            return BadRequest();
         }
     }
 }

@@ -41,7 +41,7 @@ namespace Forum.Web.Controllers
         }
         [Authorize]
         [HttpPost]
-        public async Task<IActionResult> EditUserProfile(User model)
+        public async Task<IActionResult> EditUserProfile(UserModel model)
         {
             var token = User.GetToken();
             var user = await forumAPI.EditUserProfile(model, token);

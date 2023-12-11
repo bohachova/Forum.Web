@@ -27,7 +27,7 @@
                         @foreach (var topic in Model.Items)
                         {
                             <li class="list-group-item">
-                                @topic.Name
+                                <span class="align-top"> @topic.Title </span>
                             </li>
                         }
                     </ul>
@@ -36,7 +36,7 @@
             else
             {
                 <div>
-                    <p>No users yet </p>
+                    <p class="emptyListTag">No topics yet </p>
                 </div>
             }
             

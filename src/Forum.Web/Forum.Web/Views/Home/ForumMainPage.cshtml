@@ -17,6 +17,12 @@
             <div>
                 <hr style="height: 3px;" />
             </div>
+            @if(User.IsInRole("Admin"))
+            {
+                <div>
+                    <a class="btn creationBtn" data-bs-toggle="modal" data-bs-target="#createNewTopic"> New Topic </a>
+                </div>
+            }
             <div>
                 <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
                     <ol class="breadcrumb">
@@ -35,10 +41,15 @@
                             <li class="list-group-item">
                                 <div class="row">
                                     <div class="col" style="display:inline">
-                                        @topic.Name
+                                        @topic.Title
                                     </div>
                                     <div class="col" style="display:inline">
-                                        <a class="btn btn-outline-info" asp-controller="TopicsController" asp-action="GetTopicPosts" asp-route-pageNumber="1" asp-route-topicId="@topic.Id" asp-route-topicName="@topic.Name">View</a>
+                                        <form method="get" asp-controller="Topics" asp-action="GetTopicPosts">
+                                            <input type="hidden" name="pageNumber" value="1">
+                                            <input type="hidden" name="topicId" value="@topic.Id">
+                                            <input type="hidden" name="topicTitle" value="@topic.Title">
+                                            <button type="submit" class="btn btn-outline-info" style="float:right;">View </button>
+                                        </form>
                                     </div>
                                 </div>
                             </li>
@@ -79,9 +90,28 @@
             else
             {
                 <div>
-                    <p>No users yet </p>
+                    <p class="emptyListTag">No topics yet </p>
                 </div>
             }
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="createNewTopic" tabindex="-1" aria-labelledby="createNewTopicModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="createNewTopicModalLabel">Please, enter the title </h1>
+            </div>
+            <div class="modal-body text-center">
+                <form method="post" asp-controller="Topics" asp-action="CreateTopic">
+                    <label>Topic Title</label><br />
+                    <input type="text" name="topicTitle" required maxlength="100" style="width:90%; margin-top:5px;"/><br />
+                    <input type="hidden" name="pageNumber" value="@Model.TotalPages" />
+                    <button type="submit" class="btn btn-outline-info" style="margin-top: 10px; margin-right: 5px;"> Ok </button>
+                    <button class="btn btn-outline-secondary" data-bs-dismiss="modal" style="margin-top: 10px;">Cancel</button>
+                </form>
+            </div>
         </div>
     </div>
 </div>
