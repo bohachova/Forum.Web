@@ -1,6 +1,6 @@
 ﻿@model PaginatedList<Post>
 
-<div class="containerMain" style="height: fit-content">
+<div class="containerMain" style="height: fit-content; pA-bottom: 20px;">
     <div>
         <ul class="nav nav-tabs">
             <li class="nav-item">
@@ -18,7 +18,7 @@
                 <hr style="height: 3px;" />
             </div>
             <div style="float: right; margin-right:10px;">
-                <a class="btn creationBtn" data-bs-toggle="collapse" href="#newPostForm" role="button" aria-expanded="false" aria-controls="newPostForm"> New Post</a>
+                <a class="btn creationBtn" data-bs-toggle="collapse" href="#newPostForm" role="button" aria-expanded="false" aria-controls="newPostForm" onclick="document.getElementById('newPostForm').scrollIntoView();"> New Post</a>
             </div>
             <div>
                 <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
@@ -51,6 +51,10 @@
                                             {
                                                 <img src="data:image/jpeg;base64,@post.Author.UserPhoto" class="img-fluid" style="height:70px;">
                                             }
+                                            else
+                                            {
+                                                <img src="~/images/DefaultUserAvatar.jpg" class="img-fluid" style="height:70px;">
+                                            }
                                         </div>
                                         <div class="col-10">
                                             <div class="card">
@@ -75,23 +79,6 @@
                             }
                         </ul>
                     </div>
-                    <div class="collapse" id="newPostForm" style="margin: 1% 20% 1% 20%">
-                        <div class="card border border-light">
-                            <div class="card-body text-center justify-content-center">
-                                <form method="post" asp-controller="Topics" asp-action="CreatePost" enctype="multipart/form-data">
-                                    <input type="hidden" name="authorId" value="@User.Claims.FirstOrDefault(x=>x.Type == "UserId").Value"/>
-                                    <input type="hidden" name="topicId" value="@ViewBag.TopicId" />
-                                    <input сlass="form-control" type="text" name="header" required maxlength="150" placeholder="Header" style="border-radius: 5px; padding-left: 5px; margin-bottom: 5px; width: 80%;" /> <br />
-                                    <textarea сlass="form-control" name="text" required maxlength="1000" placeholder="Please, enter..." style="border-radius: 5px; padding-left: 5px; margin-bottom: 5px; width: 80%;"> </textarea><br />
-                                    <input class="form-control" type="file" name="attachments" id="formFile" multiple style="width:80%; text-align: center; margin:auto;"><br />
-                                    <input type="hidden" name="pageNumber" value="@Model.TotalPages" />
-                                    <input type="hidden" name="topicId" value="@ViewBag.TopicId" />
-                                    <input type="hidden" name="topicTitle" value="@ViewBag.TopicTitle" />
-                                    <button type="submit" class="btn btn-outline-info" style="margin-top: 5px;"> Ok </button>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
                 }
                 else
                 {
@@ -99,6 +86,23 @@
                         <p class="emptyListTag">No posts yet </p>
                     </div>
                 }
+                <div class="collapse" id="newPostForm" style="margin: 1% 20% 1% 20%">
+                    <div class="card border border-light">
+                        <div class="card-body text-center justify-content-center">
+                            <form method="post" asp-controller="Topics" asp-action="CreatePost" enctype="multipart/form-data">
+                                <input type="hidden" name="authorId" value="@User.Claims.FirstOrDefault(x=>x.Type == "UserId").Value" />
+                                <input type="hidden" name="topicId" value="@ViewBag.TopicId" />
+                                <input сlass="form-control" type="text" name="header" required maxlength="150" placeholder="Header" style="border-radius: 5px; padding-left: 5px; margin-bottom: 5px; width: 80%;" /> <br />
+                                <textarea сlass="form-control" name="text" required maxlength="1000" placeholder="Please, enter..." style="border-radius: 5px; padding-left: 5px; margin-bottom: 5px; width: 80%;"> </textarea><br />
+                                <input class="form-control" type="file" name="attachments" id="formFile" multiple accept=".jpg, .png" style="width:80%; text-align: center; margin:auto;"><br />
+                                <input type="hidden" name="pageNumber" value="@Model.TotalPages" />
+                                <input type="hidden" name="topicId" value="@ViewBag.TopicId" />
+                                <input type="hidden" name="topicTitle" value="@ViewBag.TopicTitle" />
+                                <button type="submit" class="btn btn-outline-info" disabled style="margin-top: 5px;"> Ok </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
             </div>
             @if(Model.Items.Any())
             {
@@ -107,7 +111,7 @@
                 <div class="pagination justify-content-center mt-3">
                     @if (Model.HasPreviousPage)
                     {
-                        <a asp-controller="Topics" asp-action="GetTopicPosts" asp-route-pageNumber="@(prevPageLink)" aria-label="Previous">
+                        <a asp-controller="Topics" asp-action="GetTopicPosts" asp-route-pageNumber="@(prevPageLink)" asp-route-topicId="@ViewBag.TopicId" asp-route-topicTitle="@ViewBag.TopicTitle" aria-label="Previous">
                             <span aria-hidden="true">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-chevron-double-left" viewBox="0 0 16 16">
                                     <path fill-rule="evenodd" d="M8.354 1.646a.5.5 0 0 1 0 .708L2.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z" />
@@ -118,11 +122,11 @@
                     }
                     @for (int i = 1; i <= Model.TotalPages; i++)
                     {
-                        <a style="height:20px; width: 20px; margin: 3px;" asp-controller="Topics" asp-action="GetTopicPosts" asp-route-pageNumber="@i">@i</a>
+                        <a style="height:20px; width: 20px; margin: 3px;" asp-controller="Topics" asp-action="GetTopicPosts" asp-route-pageNumber="@i" asp-route-topicId="@ViewBag.TopicId" asp-route-topicTitle="@ViewBag.TopicTitle" >@i</a>
                     }
                     @if (Model.HasNextPage)
                     {
-                        <a asp-controller="Topics" asp-action="GetTopicPosts" asp-route-pageNumber="@(nextPageLink)" aria-label="Next">
+                        <a asp-controller="Topics" asp-action="GetTopicPosts" asp-route-pageNumber="@(nextPageLink)" asp-route-topicId="@ViewBag.TopicId" asp-route-topicTitle="@ViewBag.TopicTitle"  aria-label="Next">
                             <span aria-hidden="true">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-chevron-double-right" viewBox="0 0 16 16">
                                     <path fill-rule="evenodd" d="M3.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L9.293 8 3.646 2.354a.5.5 0 0 1 0-.708z" />
@@ -137,6 +141,10 @@
     </div>
 </div>
 
+
+
+
 @section Scripts {
     <script src="~/js/imageValidatorMultiple.js" asp-append-version="true"></script>
+    <script src="~/js/InputValidatorMultiple.js" asp-append-version="true"></script>
 }

@@ -4,22 +4,25 @@ using Forum.Web.Models.TopicPost;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Forum.Web.Models.Pagination;
+using Forum.Web.Configuration.Interfaces;
 
 namespace Forum.Web.Controllers
 {
     public class TopicsController : Controller
     {
         private readonly IForumAPI forumAPI;
-        public TopicsController(IForumAPI forumAPI)
+        private readonly IPaginationSettingsConfiguration settings;
+        public TopicsController(IForumAPI forumAPI, IPaginationSettingsConfiguration settings)
         {
             this.forumAPI = forumAPI;
+            this.settings = settings;
         }
         [Authorize]
         [HttpGet]
         public async Task<IActionResult> GetTopicPosts(int pageNumber, int topicId, string topicTitle)
         {
             var token = User.GetToken();
-            var result = await forumAPI.GetTopicPosts(new PaginationSettings { PageNumber = pageNumber, PageSize = 5}, topicId, token);
+            var result = await forumAPI.GetTopicPosts(new PaginationSettings { PageNumber = pageNumber, PageSize = settings.PostsPageSize}, topicId, token);
             ViewBag.TopicId = topicId;
             ViewBag.TopicTitle = topicTitle;
             return View("Posts", result);

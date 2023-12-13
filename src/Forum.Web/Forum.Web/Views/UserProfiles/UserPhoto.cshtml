@@ -30,7 +30,7 @@
         <div class="collapse" id="uploadForm">
             <div class="card card-body">
                 <form method="post" asp-controller="UserProfiles" asp-action="SetMyPhoto" enctype="multipart/form-data">
-                    <input class="form-control" type="file" name="file" id="formFile">
+                    <input class="form-control" type="file" name="file" id="formFile" accept=".jpg, .png">
                     <button type="submit" class="btn btn-outline-secondary mt-3"> Ok </button>
                 </form>
             </div>

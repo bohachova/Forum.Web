@@ -1,6 +1,9 @@
+using Forum.Web.Configuration;
+using Forum.Web.Configuration.Interfaces;
 using Forum.Web.Interfaces;
 using Forum.Web.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.Extensions.Options;
 using System.Net.Http.Headers;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -9,6 +12,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 builder.Services.AddScoped<IForumAPI, ForumAPIClient>();
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+builder.Services.Configure<PaginationSettingsConfiguration>(builder.Configuration.GetSection("PaginationSettings"));
+builder.Services.AddScoped<IPaginationSettingsConfiguration>(x => x.GetRequiredService<IOptions<PaginationSettingsConfiguration>>().Value);
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(x =>
 {
