@@ -1,11 +1,10 @@
-﻿<div class="containerMain">
+﻿@model PaginatedList<Topic>
+
+<div class="containerMain">
     <div>
         <ul class="nav nav-tabs">
             <li class="nav-item">
                 <a class="nav-link active" aria-current="page" asp-controller="Home" asp-action="Index">All topics</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" aria-current="page" href="#">Second tab</a>
             </li>
         </ul>
         <div>
@@ -16,21 +15,31 @@
                 <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item active" aria-current="page">
-                            <a href="#">Forum</a>
+                            <a asp-controller="Home" asp-action="Index">Forum</a>
                         </li>
                     </ol>
                 </nav>
             </div>
-            <div>
-                <ul class="list-group list-group-hover">
-                    <li class="list-group-item">
-                        Item
-                    </li>
-                    <li class="list-group-item">
-                        Item
-                    </li>
-                </ul>
-            </div>
+            @if(Model.Items.Any())
+            {
+                <div>
+                    <ul class="list-group list-group-hover">
+                        @foreach (var topic in Model.Items)
+                        {
+                            <li class="list-group-item">
+                                <span class="align-top"> @topic.Title </span>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            }
+            else
+            {
+                <div>
+                    <p class="emptyListTag">No topics yet </p>
+                </div>
+            }
+            
         </div>
     </div>
     <div class="loginRequestMessage">

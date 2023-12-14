@@ -1,22 +1,34 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Forum.Web.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Forum.Web.Models.Pagination;
+using Forum.Web.Configuration.Interfaces;
 
 namespace Forum.Web.Controllers
 {
     public class HomeController : Controller
     {
-        public IActionResult Index()
+        private readonly IForumAPI forumAPI;
+        private readonly IPaginationSettingsConfiguration settings;
+        public HomeController(IForumAPI forumAPI, IPaginationSettingsConfiguration settings)
+        {
+            this.forumAPI = forumAPI;
+            this.settings = settings;
+        }
+        public async Task<IActionResult> Index()
         {
             if(User.Identity.IsAuthenticated)
             {
                 return RedirectToAction("ForumMainPage");
             }
-            return View();
+            var topics = await forumAPI.GetTopicsList(new PaginationSettings { PageNumber = 1, PageSize = settings.TopicsPageSize });
+            return View(topics);
         }
         [Authorize]
-        public IActionResult ForumMainPage()
+        public async Task<IActionResult> ForumMainPage(int pageNumber = 1)
         {
-            return View();
+            var topics = await forumAPI.GetTopicsList(new PaginationSettings { PageNumber = pageNumber, PageSize = settings.TopicsPageSize });
+            return View(topics);
         }
     }
 }

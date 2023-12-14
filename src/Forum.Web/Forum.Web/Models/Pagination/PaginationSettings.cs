@@ -3,6 +3,6 @@
     public class PaginationSettings
     {
         public int PageNumber { get; set; }
-        public int PageSize { get; set; } = 8;
+        public int PageSize { get; set; }
     }
 }

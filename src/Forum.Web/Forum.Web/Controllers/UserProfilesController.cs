@@ -1,29 +1,28 @@
-﻿using Forum.Web.Extensions;
+﻿using Forum.Web.Configuration.Interfaces;
+using Forum.Web.Extensions;
 using Forum.Web.Interfaces;
 using Forum.Web.Models.Pagination;
 using Forum.Web.Models.User;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.IO.IsolatedStorage;
-using System.Reflection;
-using System.Security.Claims;
-using System.Security.Principal;
 
 namespace Forum.Web.Controllers
 {
     public class UserProfilesController : Controller
     {
-        private readonly IForumAPI forumAPI; 
-        public UserProfilesController(IForumAPI forumAPI)
+        private readonly IForumAPI forumAPI;
+        private readonly IPaginationSettingsConfiguration settings;
+        public UserProfilesController(IForumAPI forumAPI, IPaginationSettingsConfiguration settings)
         {
             this.forumAPI = forumAPI;
+            this.settings = settings;
         }
         [Authorize(Roles ="Admin")]
         [HttpGet]
         public async Task<IActionResult> GetAllProfiles(int pageNumber)
         {
             var token = User.GetToken();
-            var result = await forumAPI.GetAllProfiles(new PaginationSettings { PageNumber = pageNumber }, token);
+            var result = await forumAPI.GetAllProfiles(new PaginationSettings { PageNumber = pageNumber, PageSize = settings.UsersPageSize }, token);
             return View("Users", result);
         }
         [HttpGet]
@@ -45,7 +44,7 @@ namespace Forum.Web.Controllers
         }
         [Authorize]
         [HttpPost]
-        public async Task<IActionResult> EditUserProfile(User model)
+        public async Task<IActionResult> EditUserProfile(UserModel model)
         {
             var token = User.GetToken();
             var user = await forumAPI.EditUserProfile(model, token);

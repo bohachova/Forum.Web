@@ -15,13 +15,21 @@ function isImage(filename) {
 
 $('document').ready(() => {
     $("#formFile").on("change", function () {
-        if ($("#formFile")[0].files[0].size > 5242880) {
-            alert("File is too big");
+        if ($("#formFile")[0].files.length > 5) {
+            alert("You can select only 5 images");
             this.form.reset();
         }
-        if (!isImage($("#formFile")[0].files[0])) {
-            alert("Invalid file type");
+
+        if (Array.from($("#formFile")[0].files).some(x => (x.size > 5242880))) {
+            alert("size error");
             this.form.reset();
         }
+
+        if (Array.from($("#formFile")[0].files).some(x => !isImage(x.name))) {
+            alert("type error");
+            this.form.reset();
+        }
+
     });
 });
+

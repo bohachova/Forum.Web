@@ -121,4 +121,35 @@ a {
     border: solid 5px #017b7d;
 }
 
+.emptyListTag {
+    text-align: center;
+    color: indianred;
+}
 
+.creationBtn {
+    background: linear-gradient(to right, #014445, #1d8d8f, #014445);
+    font-size: medium;
+    float: right;
+    margin-right: 10px;
+    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
+    color: white;
+}
+
+.creationBtn:hover {
+        box-shadow: 0 0 16px 0 rgb(254, 254, 254), 0 0 20px 0 rgb(254, 254, 254);
+        background: linear-gradient(to right, #017b7d, #34f7fa, #017b7d);
+        color: white;
+}
+
+.containerForPosts {
+    
+    background: rgba(101, 111, 133, 0.2);
+    margin: 20px;
+    padding: 20px;
+}
+
+.card {
+    height: fit-content;
+    background-color: rgba(149, 164, 196, 0.2);
+    margin-right: 20px;
+}
