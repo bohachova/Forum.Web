@@ -64,7 +64,6 @@ namespace Forum.Web.Services
         public async Task<UserModel> GetUserProfile(int userId, string token)
         {
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-
             var response = await client.GetAsync($"{client.BaseAddress}Profiles/UserProfile/{userId}");
             string s = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<UserModel>(s);
@@ -170,6 +169,42 @@ namespace Forum.Web.Services
             var response = await client.PostAsync($"{client.BaseAddress}Topics/NewPost", content);
             string s = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<Response>(s);
+        }
+
+        public async Task<Response> DeletePost(int postId, string token)
+        {
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            HttpContent content = JsonContent.Create(postId);
+            var response = await client.PostAsync($"{client.BaseAddress}Topics/DeletePost", content);
+            string s = await response.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<Response>(s);
+        }
+
+        public async Task<Response> LeaveComment(Comment comment, string token)
+        {
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            HttpContent content = JsonContent.Create(comment);
+            var response = await client.PostAsync($"{client.BaseAddress}Comments/NewComment", content);
+            string s = await response.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<Response>(s);
+        }
+
+        public async Task<Response> DeleteComment(int commentId, string token)
+        {
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            HttpContent content = JsonContent.Create(commentId);
+            var response = await client.PostAsync($"{client.BaseAddress}Comments/DeleteComment", content);
+            string s = await response.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<Response>(s);
+        }
+
+        public async Task<Post> ViewPost(int postId, PaginationSettings settings, string token)
+        {
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            HttpContent content = JsonContent.Create(settings);
+            var response = await client.PostAsync($"{client.BaseAddress}Topics/ViewPost/{postId}", content);
+            string s = await response.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<Post>(s);
         }
     }
 }

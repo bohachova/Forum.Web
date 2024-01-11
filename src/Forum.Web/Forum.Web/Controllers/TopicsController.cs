@@ -19,12 +19,12 @@ namespace Forum.Web.Controllers
         }
         [Authorize]
         [HttpGet]
-        public async Task<IActionResult> GetTopicPosts(int pageNumber, int topicId, string topicTitle)
+        public async Task<IActionResult> GetTopicPosts(CurrentPaginationPositionSettings position)
         {
             var token = User.GetToken();
-            var result = await forumAPI.GetTopicPosts(new PaginationSettings { PageNumber = pageNumber, PageSize = settings.PostsPageSize}, topicId, token);
-            ViewBag.TopicId = topicId;
-            ViewBag.TopicTitle = topicTitle;
+            var result = await forumAPI.GetTopicPosts(new PaginationSettings { PageNumber = position.PageNumber, PageSize = settings.PostsPageSize}, position.TopicId, token);
+            ViewBag.TopicId = position.TopicId;
+            ViewBag.TopicTitle = position.TopicTitle;
             return View("Posts", result);
         }
         [Authorize(Roles ="Admin")]
@@ -45,7 +45,7 @@ namespace Forum.Web.Controllers
         }
         [Authorize]
         [HttpPost]
-        public async Task<IActionResult> CreatePost(PostCreationModel post, int pageNumber, int topicId, string topicTitle)
+        public async Task<IActionResult> CreatePost(PostCreationModel post, CurrentPaginationPositionSettings position)
         {
             var token = User.GetToken();
             if(ModelState.IsValid)
@@ -53,10 +53,40 @@ namespace Forum.Web.Controllers
                 var result = await forumAPI.CreatePost(post, token);
                 if (result.IsSuccess)
                 {
-                    return RedirectToAction("GetTopicPosts", new {pageNumber = pageNumber, topicId = topicId, topicTitle = topicTitle});
+                    return RedirectToAction("GetTopicPosts", new {position = position});
                 }
             }
             return BadRequest();
         }
+        [Authorize]
+        [HttpPost]
+        public async Task<IActionResult> DeletePost (int postId, bool commentsToPost, int authorId, CurrentPaginationPositionSettings position)
+        {
+            var userId = User.GetUserId();
+            if(User.IsInRole("Admin"))
+            {
+                var token = User.GetToken();
+                await forumAPI.DeletePost(postId, token);
+                return RedirectToAction("GetTopicPosts", new { position = position});
+            }
+            else if(User.IsInRole("User") && !commentsToPost && userId == authorId )
+            {
+                var token = User.GetToken() ;
+                await forumAPI.DeletePost(postId, token);
+                return RedirectToAction("GetTopicPosts", new { position = position });
+            }
+            return BadRequest();
+        }
+        [Authorize]
+        [HttpGet]
+        public async Task<IActionResult> ViewPost (CurrentPaginationPositionSettings position)
+        {
+            var token = User.GetToken();
+            var post = await forumAPI.ViewPost(position.PostId, new PaginationSettings { PageNumber = position.PageNumber, PageSize = settings.PostsPageSize}, token);
+            ViewBag.TopicTitle = position.TopicTitle;
+            return View("PostPage", post);
+        }
+
+
     }
 }

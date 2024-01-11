@@ -1,6 +1,6 @@
 ﻿@model PaginatedList<Post>
 
-<div class="containerMain" style="height: fit-content; pA-bottom: 20px;">
+<div class="containerMain" style="height: fit-content; padding-bottom: 20px;">
     <div>
         <ul class="nav nav-tabs">
             <li class="nav-item">
@@ -35,7 +35,6 @@
             <div class="containerForPosts">
                 @if (Model.Items.Any())
                 {
-
                     <div>
                         <ul class="list-group list-group-hover">
                             @foreach (var post in Model.Items)
@@ -72,6 +71,9 @@
                                                         }
                                                     }
                                                 </div>
+                                                <div class="card-footer text-center">
+                                                    <a class="btn btn-outline-info" asp-controller="Topics" asp-action="ViewPost" asp-route-pageNumber="1" asp-route-postId="@post.Id" asp-route-topicTitle="@ViewBag.TopicTitle">View</a>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -93,12 +95,12 @@
                                 <input type="hidden" name="authorId" value="@User.Claims.FirstOrDefault(x=>x.Type == "UserId").Value" />
                                 <input type="hidden" name="topicId" value="@ViewBag.TopicId" />
                                 <input сlass="form-control" type="text" name="header" required maxlength="150" placeholder="Header" style="border-radius: 5px; padding-left: 5px; margin-bottom: 5px; width: 80%;" /> <br />
-                                <textarea сlass="form-control" name="text" required maxlength="1000" placeholder="Please, enter..." style="border-radius: 5px; padding-left: 5px; margin-bottom: 5px; width: 80%;"> </textarea><br />
+                                <textarea сlass="form-control" id="commentText" name="text" required maxlength="1000" placeholder="Please, enter..." style="border-radius: 5px; padding-left: 5px; margin-bottom: 5px; width: 80%;"> </textarea><br />
                                 <input class="form-control" type="file" name="attachments" id="formFile" multiple accept=".jpg, .png" style="width:80%; text-align: center; margin:auto;"><br />
                                 <input type="hidden" name="pageNumber" value="@Model.TotalPages" />
                                 <input type="hidden" name="topicId" value="@ViewBag.TopicId" />
                                 <input type="hidden" name="topicTitle" value="@ViewBag.TopicTitle" />
-                                <button type="submit" class="btn btn-outline-info" disabled style="margin-top: 5px;"> Ok </button>
+                                <button type="submit" class="btn btn-outline-info" id="sendCommentBtn" disabled style="margin-top: 5px;"> Ok </button>
                             </form>
                         </div>
                     </div>
@@ -148,3 +150,5 @@
     <script src="~/js/imageValidatorMultiple.js" asp-append-version="true"></script>
     <script src="~/js/InputValidatorMultiple.js" asp-append-version="true"></script>
 }
+
+                                   

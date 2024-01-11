@@ -24,5 +24,6 @@ namespace Forum.Web.Models.User
         public string? About { get; set; }
         public List<Topic> CreatedTopics { get; set; } = new List<Topic>();
         public List<Post> Posts { get; set; } = new List<Post>();
+        public List<Comment> Comments { get; set; } = new List<Comment>();
     }
 }
