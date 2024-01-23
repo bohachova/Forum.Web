@@ -24,7 +24,7 @@
                             <a asp-controller="Home" asp-action="Index">Forum</a>
                         </li>
                         <li class="breadcrumb-item" aria-current="page">
-                            <a asp-controller="Topics" asp-action="GetTopicPosts" asp-route-pageNumber="1" asp-route-topicId="@ViewBag.TopicId" asp-route-topicTitle="@ViewBag.TopicTitle"> @ViewBag.TopicTitle </a>
+                            <a asp-controller="Topics" asp-action="GetTopicPosts" asp-route-pageNumber="1" asp-route-topicId="@Model.TopicId" asp-route-topicTitle="@ViewBag.TopicTitle"> @ViewBag.TopicTitle </a>
                         </li>
                         <li class="breadcrumb-item active" aria-current="page">
                             <a asp-controller="Topics" asp-action="ViewPost" asp-route-pageNumber="1" asp-route-postId="@Model.Id" asp-route-topicTitle="@ViewBag.TopicTitle"> @Model.Header </a>
@@ -74,7 +74,6 @@
                                                 <input type="hidden" name="postId" value="@Model.Id" />
                                                 <input type="hidden" name="commentsToPost" value="@Model.Comments.Items.Any()" />
                                                 <input type="hidden" name="authorId" value="@Model.AuthorId" />
-                                                <input type="hidden" name="pageNumber" value="@Model.Comments.TotalPages" />
                                                 <input type="hidden" name="topicId" value="@Model.TopicId" />
                                                 <input type="hidden" name="topicTitle" value="@ViewBag.TopicTitle" />
                                                 <button type="submit" class="btn btn-outline-danger" >Delete</button>
@@ -99,11 +98,20 @@
                                         <div class="card-header">
                                             @if(comment.ParentId > 0)
                                             {
-                                                <span><b>@comment.Author.Username</b> replied to <b>@comment.Parent.Author.Username</b> </span>
+                                                string[] words = comment.Parent.Text.Split(' ');
+                                                string trimmedComment = string.Join(' ', words.Take(5));
+                                                <span>
+                                                    <b>@comment.Author.Username</b>
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-return-right" viewBox="0 0 16 16">
+                                                        <path fill-rule="evenodd" d="M1.5 1.5A.5.5 0 0 0 1 2v4.8a2.5 2.5 0 0 0 2.5 2.5h9.793l-3.347 3.346a.5.5 0 0 0 .708.708l4.2-4.2a.5.5 0 0 0 0-.708l-4-4a.5.5 0 0 0-.708.708L13.293 8.3H3.5A1.5 1.5 0 0 1 2 6.8V2a.5.5 0 0 0-.5-.5" />
+                                                    </svg>
+                                                    <b>@comment.Parent.Author.Username</b>
+                                                    "@trimmedComment"
+                                                </span>
                                             }
                                             else
                                             {
-                                                <span><b>@comment.Author.Username</b> replied to <b>@Model.Author.Username</b> </span>
+                                                <span><b>@comment.Author.Username</b> </span>
                                             }
                                             <span style="float:right; font-size: 10px; color: black;">Published @comment.PublishingTime</span>
                                         </div>
@@ -124,6 +132,7 @@
                                                     <input type="hidden" name="pageNumber" value="@comment.Position.PageNumber" />
                                                     <input type="hidden" name="topicId" value="@comment.Position.TopicId" />
                                                     <input type="hidden" name="topicTitle" value="@comment.Position.TopicTitle" />
+                                                    <input type="hidden" name="postId" value="@Model.Id" />
                                                     <button type="submit" class="btn btn-outline-danger">Delete</button>
                                                 </form>
                                             }
@@ -146,7 +155,6 @@
                                     <input type="hidden" name="postId" value="@Model.Id" />
                                     <input type="hidden" name="authorId" value="@int.Parse(User.Claims.FirstOrDefault(x=>x.Type == "UserId").Value)" />
                                     <input type="hidden" name="parentAuthorId" value="@Model.AuthorId" />
-                                    <label class="form-control" >You replied to <b>@Model.Author.Username</b></label>
                                     <textarea class="form-control" id="commentText" name="text" required maxlength="500" placeholder="Reply"></textarea>
                                     @{
                                         int pageNumber = Model.Comments.Items.Any() ? Model.Comments.TotalPages : 1;
@@ -164,7 +172,6 @@
                         <div class="card border border-light">
                             <div class="card-body text-center justify-content-center">
                                 <form method="post" asp-controller="Comments" asp-action="LeaveComment">
-                                    <input type="hidden" name="postId" value="@Model.Id" />
                                     <input type="hidden" id="parentCommentId" name="parentId" />
                                     <input type="hidden" name="authorId" value="@int.Parse(User.Claims.FirstOrDefault(x=>x.Type == "UserId").Value)" />
                                     <input type="hidden" id="parentCommentAuthorId" name="parentAuthorId" />
@@ -176,6 +183,7 @@
                                     <input type="hidden" name="pageNumber" value="@pageNumberChild" />
                                     <input type="hidden" name="topicId" value="@Model.TopicId" />
                                     <input type="hidden" name="topicTitle" value="@ViewBag.TopicTitle" />
+                                    <input type="hidden" name="postId" value="@Model.Id" />
                                     <button type="submit" id="sendChildCommentBtn" class="btn btn-outline-info" disabled style="margin-top: 10px;"> Ok </button>
                                     <button type="button" class="btn btn-outline-danger" style="margin-top: 10px;" onclick="closeChildCommentForm()">Cancel</button>
                                 </form>

@@ -35,13 +35,13 @@ namespace Forum.Web.Controllers
             {
                 var token = User.GetToken();
                 await forumAPI.DeleteComment(commentId, token);
-                return RedirectToAction("GetTopicPosts", new { PageNumber = position.PageNumber, TopicId = position.TopicId, TopicTitle = position.TopicTitle, PostId = position.PostId });
+                return RedirectToAction("ViewPost", "Topics", new { PageNumber = position.PageNumber, TopicId = position.TopicId, TopicTitle = position.TopicTitle, PostId = position.PostId });
             }
             else if (User.IsInRole("User") && !childComments && userId == authorId)
             {
                 var token = User.GetToken();
                 await forumAPI.DeleteComment(commentId, token);
-                return RedirectToAction("GetTopicPosts", new { PageNumber = position.PageNumber, TopicId = position.TopicId, TopicTitle = position.TopicTitle, PostId = position.PostId });
+                return RedirectToAction("ViewPost", "Topics", new { PageNumber = position.PageNumber, TopicId = position.TopicId, TopicTitle = position.TopicTitle, PostId = position.PostId });
             }
             return BadRequest();
         }

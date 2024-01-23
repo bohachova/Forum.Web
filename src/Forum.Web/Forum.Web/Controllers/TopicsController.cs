@@ -53,7 +53,7 @@ namespace Forum.Web.Controllers
                 var result = await forumAPI.CreatePost(post, token);
                 if (result.IsSuccess)
                 {
-                    return RedirectToAction("GetTopicPosts", new {position = position});
+                    return RedirectToAction("GetTopicPosts", new { PageNumber = position.PageNumber, TopicId = position.TopicId, TopicTitle=position.TopicTitle});
                 }
             }
             return BadRequest();
@@ -67,13 +67,13 @@ namespace Forum.Web.Controllers
             {
                 var token = User.GetToken();
                 await forumAPI.DeletePost(postId, token);
-                return RedirectToAction("GetTopicPosts", new { position = position});
+                return RedirectToAction("GetTopicPosts", new { PageNumber = 1, TopicId = position.TopicId, TopicTitle = position.TopicTitle });
             }
             else if(User.IsInRole("User") && !commentsToPost && userId == authorId )
             {
                 var token = User.GetToken() ;
                 await forumAPI.DeletePost(postId, token);
-                return RedirectToAction("GetTopicPosts", new { position = position });
+                return RedirectToAction("GetTopicPosts", new { PageNumber = 1, TopicId = position.TopicId, TopicTitle = position.TopicTitle });
             }
             return BadRequest();
         }
