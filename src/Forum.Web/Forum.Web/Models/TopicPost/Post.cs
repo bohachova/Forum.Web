@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Forum.Web.Models.Pagination;
 using Forum.Web.Models.User;
 
 namespace Forum.Web.Models.TopicPost
@@ -19,5 +20,6 @@ namespace Forum.Web.Models.TopicPost
         public UserModel Author { get; set; }
         [Required]
         public int TopicId { get; set; }
+        public PaginatedList<Comment> Comments { get; set; } 
     }
 }

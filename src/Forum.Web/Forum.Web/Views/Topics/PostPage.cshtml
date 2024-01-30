@@ -1,0 +1,260 @@
+﻿@model Post
+
+<div class="containerMain" style="height: fit-content; padding-bottom: 20px;">
+    <div>
+        <ul class="nav nav-tabs">
+            <li class="nav-item">
+                <a class="nav-link active" aria-current="page" asp-controller="Home" asp-action="Index">All topics</a>
+            </li>
+            @if (User.IsInRole("Admin"))
+            {
+                <li class="nav-item">
+                    <a class="nav-link" aria-current="page" asp-controller="UserProfiles" asp-action="GetAllProfiles" asp-route-pageNumber="1">All users</a>
+                </li>
+            }
+        </ul>
+        <div>
+            <div>
+                <hr style="height: 3px;" />
+            </div>
+            <div>
+                <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item" aria-current="page">
+                            <a asp-controller="Home" asp-action="Index">Forum</a>
+                        </li>
+                        <li class="breadcrumb-item" aria-current="page">
+                            <a asp-controller="Topics" asp-action="GetTopicPosts" asp-route-pageNumber="1" asp-route-topicId="@Model.TopicId" asp-route-topicTitle="@ViewBag.TopicTitle"> @ViewBag.TopicTitle </a>
+                        </li>
+                        <li class="breadcrumb-item active" aria-current="page">
+                            <a asp-controller="Topics" asp-action="ViewPost" asp-route-pageNumber="1" asp-route-postId="@Model.Id" asp-route-topicTitle="@ViewBag.TopicTitle"> @Model.Header </a>
+                        </li>
+                    </ol>
+                </nav>
+            </div>
+            <div class="containerForPosts">
+                <ul class="list-group list-group-hover">
+                    <li class="list-group-item">
+                        <div class="row">
+                            <div class="col-2 text-center">
+                                <p style="margin-bottom: 5px;">@Model.Author.Username</p>
+                                @if (Model.Author.UserPhoto != null)
+                                {
+                                    <img src="data:image/jpeg;base64,@Model.Author.UserPhoto" class="img-fluid" style="height:70px;">
+                                }
+                                else
+                                {
+                                    <img src="~/images/DefaultUserAvatar.jpg" class="img-fluid" style="height:70px;">
+                                }
+                            </div>
+                            <div class="col-10">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <span>@Model.Header </span>
+                                        <span style="float:right; font-size: 10px; color: black;">Published @Model.PostPublishingTime</span>
+                                    </div>
+                                    <div class="card-body">
+                                        <p class="card-text">@Model.Text</p>
+                                        @if (Model.Attachments.Any())
+                                        {
+                                            foreach (var att in Model.Attachments)
+                                            {
+                                                <img src="data:image/jpeg;base64,@att.File" class="img-fluid" style="width: 100px;">
+                                            }
+                                        }
+                                    </div>
+                                    <div class="card-footer text-center">
+                                        @if (Model.AuthorId != int.Parse(User.Claims.FirstOrDefault(x => x.Type == "UserId").Value))
+                                        {
+                                            <button class="btn btn-outline-info" style="display:inline;" onclick="openCommentForm()">Reply</button>
+                                        }
+                                        @if (User.IsInRole("Admin") || int.Parse(User.Claims.FirstOrDefault(x => x.Type == "UserId").Value) == Model.AuthorId && !Model.Comments.Items.Any())
+                                        {
+                                            <form method="post" asp-controller="Topics" asp-action="DeletePost" style="display:inline;">
+                                                <input type="hidden" name="postId" value="@Model.Id" />
+                                                <input type="hidden" name="commentsToPost" value="@Model.Comments.Items.Any()" />
+                                                <input type="hidden" name="authorId" value="@Model.AuthorId" />
+                                                <input type="hidden" name="topicId" value="@Model.TopicId" />
+                                                <input type="hidden" name="topicTitle" value="@ViewBag.TopicTitle" />
+                                                <button type="submit" class="btn btn-outline-danger" >Delete</button>
+                                            </form>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    @if (Model.Comments.Items.Any())
+                    {
+
+                        @foreach (var comment in Model.Comments.Items)
+                        {
+                            <li class="list-group-item">
+                                <div class="commentsBlock">
+                                    @{
+                                        comment.Position = new CurrentPaginationPositionSettings { PageNumber = Model.Comments.TotalPages, TopicId = Model.TopicId, TopicTitle = @ViewBag.TopicTitle };
+                                    }
+                                    <div class="card">
+                                        <div class="card-header">
+                                            @if(comment.ParentId > 0)
+                                            {
+                                                string[] words = comment.Parent.Text.Split(' ');
+                                                string trimmedComment = string.Join(' ', words.Take(5));
+                                                <span>
+                                                    <b>@comment.Author.Username</b>
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-return-right" viewBox="0 0 16 16">
+                                                        <path fill-rule="evenodd" d="M1.5 1.5A.5.5 0 0 0 1 2v4.8a2.5 2.5 0 0 0 2.5 2.5h9.793l-3.347 3.346a.5.5 0 0 0 .708.708l4.2-4.2a.5.5 0 0 0 0-.708l-4-4a.5.5 0 0 0-.708.708L13.293 8.3H3.5A1.5 1.5 0 0 1 2 6.8V2a.5.5 0 0 0-.5-.5" />
+                                                    </svg>
+                                                    <b>@comment.Parent.Author.Username</b>
+                                                    "@trimmedComment"
+                                                </span>
+                                            }
+                                            else
+                                            {
+                                                <span><b>@comment.Author.Username</b> </span>
+                                            }
+                                            <span style="float:right; font-size: 10px; color: black;">Published @comment.PublishingTime</span>
+                                        </div>
+                                        <div class="card-body">
+                                            <p class="card-text">@comment.Text</p>
+                                        </div>
+                                        <div class="card-footer text-center">
+                                            @if (comment.AuthorId != int.Parse(User.Claims.FirstOrDefault(x => x.Type == "UserId").Value))
+                                            {
+                                                <button class="btn btn-outline-info" style="display:inline;" onclick="openChildCommentForm('@comment.Id','@comment.AuthorId', '@comment.Author.Username')">Reply</button>
+                                            }
+                                            @if (User.IsInRole("Admin") || int.Parse(User.Claims.FirstOrDefault(x => x.Type == "UserId").Value) == comment.AuthorId && !comment.HasChildComments)
+                                            {
+                                                <form method="post" asp-controller="Comments" asp-action="DeleteComment" style="display:inline;">
+                                                    <input type="hidden" name="commentId" value="@comment.Id" />
+                                                    <input type="hidden" name="childComments" value="@comment.HasChildComments" />
+                                                    <input type="hidden" name="authorId" value="@comment.Author.Id" />
+                                                    <input type="hidden" name="pageNumber" value="@comment.Position.PageNumber" />
+                                                    <input type="hidden" name="topicId" value="@comment.Position.TopicId" />
+                                                    <input type="hidden" name="topicTitle" value="@comment.Position.TopicTitle" />
+                                                    <input type="hidden" name="postId" value="@Model.Id" />
+                                                    <button type="submit" class="btn btn-outline-danger">Delete</button>
+                                                </form>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                        }
+                    }
+                    else
+                    {
+                        <div>
+                            <p class="emptyListTag">No comments yet </p>
+                        </div>
+                    }
+                    <div id="newCommentForm" style="margin: 1% 20% 1% 20%; display:none;">
+                        <div class="card border border-light">
+                            <div class="card-body text-center justify-content-center">
+                                <form method="post" asp-controller="Comments" asp-action="LeaveComment">
+                                    <input type="hidden" name="postId" value="@Model.Id" />
+                                    <input type="hidden" name="authorId" value="@int.Parse(User.Claims.FirstOrDefault(x=>x.Type == "UserId").Value)" />
+                                    <input type="hidden" name="parentAuthorId" value="@Model.AuthorId" />
+                                    <textarea class="form-control" id="commentText" name="text" required maxlength="500" placeholder="Reply"></textarea>
+                                    @{
+                                        int pageNumber = Model.Comments.Items.Any() ? Model.Comments.TotalPages : 1;
+                                    }
+                                    <input type="hidden" name="pageNumber" value="@pageNumber" />
+                                    <input type="hidden" name="topicId" value="@Model.TopicId" />
+                                    <input type="hidden" name="topicTitle" value="@ViewBag.TopicTitle" />
+                                    <button type="submit" id="sendCommentBtn" class="btn btn-outline-info" disabled style="margin-top: 10px;"> Ok </button>
+                                    <button type="button" class="btn btn-outline-danger" style="margin-top: 10px;" onclick="closeCommentForm()"> Cancel </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="childCommentForm" style="margin: 1% 20% 1% 20%; display:none">
+                        <div class="card border border-light">
+                            <div class="card-body text-center justify-content-center">
+                                <form method="post" asp-controller="Comments" asp-action="LeaveComment">
+                                    <input type="hidden" id="parentCommentId" name="parentId" />
+                                    <input type="hidden" name="authorId" value="@int.Parse(User.Claims.FirstOrDefault(x=>x.Type == "UserId").Value)" />
+                                    <input type="hidden" id="parentCommentAuthorId" name="parentAuthorId" />
+                                    <label class="form-control" id="parentAuthorName"></label>
+                                    <textarea class="form-control" id="childCommentText" name="text" required maxlength="500" placeholder="Reply"></textarea>
+                                    @{
+                                        int pageNumberChild = Model.Comments.Items.Any() ? Model.Comments.TotalPages : 1;
+                                    }
+                                    <input type="hidden" name="pageNumber" value="@pageNumberChild" />
+                                    <input type="hidden" name="topicId" value="@Model.TopicId" />
+                                    <input type="hidden" name="topicTitle" value="@ViewBag.TopicTitle" />
+                                    <input type="hidden" name="postId" value="@Model.Id" />
+                                    <button type="submit" id="sendChildCommentBtn" class="btn btn-outline-info" disabled style="margin-top: 10px;"> Ok </button>
+                                    <button type="button" class="btn btn-outline-danger" style="margin-top: 10px;" onclick="closeChildCommentForm()">Cancel</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </ul>
+
+            </div>
+            @if (Model.Comments.Items.Any())
+            {
+                int prevPageLink = Model.Comments.HasPreviousPage ? Model.Comments.PageIndex - 1 : 1;
+                int nextPageLink = Model.Comments.HasNextPage ? Model.Comments.PageIndex + 1 : Model.Comments.TotalPages;
+                <div class="pagination justify-content-center mt-3">
+                    @if (Model.Comments.HasPreviousPage)
+                    {
+                        <a asp-controller="Topics" asp-action="ViewPost" asp-route-pageNumber="@(prevPageLink)" asp-route-postId="@Model.Id" asp-route-topicTitle="@ViewBag.TopicTitle" aria-label="Previous">
+                            <span aria-hidden="true">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-chevron-double-left" viewBox="0 0 16 16">
+                                    <path fill-rule="evenodd" d="M8.354 1.646a.5.5 0 0 1 0 .708L2.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z" />
+                                    <path fill-rule="evenodd" d="M12.354 1.646a.5.5 0 0 1 0 .708L6.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z" />
+                                </svg>
+                            </span>
+                        </a>
+                    }
+                    @for (int i = 1; i <= Model.Comments.TotalPages; i++)
+                    {
+                        <a style="height:20px; width: 20px; margin: 3px;" asp-controller="Topics" asp-action="ViewPost" asp-route-pageNumber="@i" asp-route-postId="@Model.Id" asp-route-topicTitle="@ViewBag.TopicTitle">@i</a>
+                    }
+                    @if (Model.Comments.HasNextPage)
+                    {
+                        <a asp-controller="Topics" asp-action="ViewPost" asp-route-pageNumber="@(nextPageLink)" asp-route-postId="@Model.Id" asp-route-topicTitle="@ViewBag.TopicTitle" aria-label="Next">
+                            <span aria-hidden="true">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-chevron-double-right" viewBox="0 0 16 16">
+                                    <path fill-rule="evenodd" d="M3.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L9.293 8 3.646 2.354a.5.5 0 0 1 0-.708z" />
+                                    <path fill-rule="evenodd" d="M7.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L13.293 8 7.646 2.354a.5.5 0 0 1 0-.708z" />
+                                </svg>
+                            </span>
+                        </a>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+
+@section Scripts{
+    <script src="~/js/CommentValidator.js" asp-append-version="true"></script>
+    <script>
+        function openChildCommentForm(parentId, parentAuthorId, parentAuthorName) {
+            closeCommentForm();
+            document.getElementById('childCommentForm').style.display = 'block';
+            document.getElementById('parentCommentId').value = parentId;
+            document.getElementById('parentCommentAuthorId').value = parentAuthorId;
+            var label = document.getElementById('parentAuthorName');
+            label.innerText = `You replied to ${parentAuthorName}`;
+            document.getElementById('childCommentForm').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+        function closeChildCommentForm() {
+            document.getElementById('childCommentForm').style.display = 'none';
+        }
+        function closeCommentForm() {
+            document.getElementById('newCommentForm').style.display = 'none';
+        }
+        function openCommentForm()
+        {
+            closeChildCommentForm();
+            document.getElementById('newCommentForm').style.display = 'block';
+            document.getElementById('newCommentForm').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    </script>
+}
+
