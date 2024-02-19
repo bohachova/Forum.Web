@@ -86,7 +86,14 @@ namespace Forum.Web.Controllers
             ViewBag.TopicTitle = position.TopicTitle;
             return View("PostPage", post);
         }
-
+        [Authorize]
+        [HttpPost]
+        public async Task<IActionResult> EditPost(PostEditModel post, CurrentPaginationPositionSettings position)
+        {
+            var token = User.GetToken();
+            await forumAPI.EditPost(post, token);
+            return RedirectToAction("GetTopicPosts", new { PageNumber = position.PageNumber, TopicId = position.TopicId, TopicTitle = position.TopicTitle });
+        }
 
     }
 }

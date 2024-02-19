@@ -52,6 +52,10 @@
                                     <div class="card-header">
                                         <span>@Model.Header </span>
                                         <span style="float:right; font-size: 10px; color: black;">Published @Model.PostPublishingTime</span>
+                                        @if (Model.WasEdited)
+                                        {
+                                            <span style="float:right; font-size: 10px; color: black;">Edited @Model.LastEdited / </span>
+                                        }
                                     </div>
                                     <div class="card-body">
                                         <p class="card-text">@Model.Text</p>
@@ -67,6 +71,10 @@
                                         @if (Model.AuthorId != int.Parse(User.Claims.FirstOrDefault(x => x.Type == "UserId").Value))
                                         {
                                             <button class="btn btn-outline-info" style="display:inline;" onclick="openCommentForm()">Reply</button>
+                                        }
+                                        @if (Model.Author.Id == int.Parse(User.Claims.FirstOrDefault(x => x.Type == "UserId").Value))
+                                        {
+                                            <a class="btn btn-outline-info" style="display: inline; margin-right: 5px;" data-bs-toggle="modal" data-bs-target="#editPostForm"> Edit </a>
                                         }
                                         @if (User.IsInRole("Admin") || int.Parse(User.Claims.FirstOrDefault(x => x.Type == "UserId").Value) == Model.AuthorId && !Model.Comments.Items.Any())
                                         {
@@ -230,6 +238,46 @@
     </div>
 </div>
 
+<div class="modal fade" id="editPostForm" tabindex="-1" aria-labelledby="editPostFormModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="editPostFormModalLabel">Please, edit your post </h1>
+            </div>
+            <div class="modal-body text-center">
+                <form method="post" asp-controller="Topics" asp-action="EditPost" id="editForm" enctype="multipart/form-data">
+                    <input type="hidden" name="id" value="@Model.Id" />
+                    <input class="form-control" type="text" name="header" required maxlenght="150" style="width:90%; margin-top:5px; margin-bottom:5px;" value="@Model.Header"/>
+                    <textarea class="form-control" name="text" required maxlength="1000" style="width:90%;">@Model.Text</textarea>
+                    @if (Model.Attachments.Any())
+                    {
+                        <div class="imageGallery">
+                            @foreach(var att in Model.Attachments)
+                            {
+                                <div class="imageContainer">
+                                    <img src="data:image/jpeg;base64,@att.File" class="img-fluid image" id="@att.Id" style="width:15%;">
+                                    <span class="delete-icon" onmouseover="makeGrayscale(this.previousElementSibling)" onmouseout="revertGrayscale(this.previousElementSibling)" onclick="deleteImage(this.previousElementSibling, this)">
+                                       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg deleteIcon" viewBox="0 0 16 16" data-toggle="tooltip" title="Delete Image">
+                                            <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z" />
+                                        </svg>
+                                    </span>
+                                </div>
+                            }
+                        </div>
+                    }
+                    <input type="hidden" id="deletedAttachments" name="deletedAttachments" />
+                    <input class="form-control" type="file" name="newAttachments" id="newAttachments" multiple accept=".jpg, .png" style="display: none; width:80%; text-align: center; margin:auto;"><br />
+                    <input type="hidden" name="pageNumber" value="1" />
+                    <input type="hidden" name="topicId" value="@Model.TopicId" />
+                    <input type="hidden" name="topicTitle" value="@ViewBag.TopicTitle" />
+                    <button type="submit" class="btn btn-outline-info" style="margin-top: 10px; margin-right: 5px;"> Ok </button>
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal" style="margin-top: 10px;">Cancel</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 @section Scripts{
     <script src="~/js/CommentValidator.js" asp-append-version="true"></script>
@@ -243,18 +291,105 @@
             label.innerText = `You replied to ${parentAuthorName}`;
             document.getElementById('childCommentForm').scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
+        
         function closeChildCommentForm() {
             document.getElementById('childCommentForm').style.display = 'none';
         }
+        
         function closeCommentForm() {
             document.getElementById('newCommentForm').style.display = 'none';
         }
+        
         function openCommentForm()
         {
             closeChildCommentForm();
             document.getElementById('newCommentForm').style.display = 'block';
             document.getElementById('newCommentForm').scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
+
+        var deletedImages = "";
+        var allowedNewImages = 5 - @Model.Attachments.Count();
+        
+        function deleteImage(image, span) {
+            image.classList.add("hiddenImage");
+            span.classList.add("hiddenImage");
+            deletedImages += (deletedImages === "") ? image.id : `,${image.id}`;
+            allowedNewImages++;
+        }
+
+        function checkNewAttAllowed() {
+           
+            if (allowedNewImages === 0) {
+                document.getElementById('newAttachments').style.display = 'none';
+            } else { 
+                document.getElementById('newAttachments').style.display = 'block';
+            }
+        }
+
+        setInterval(checkNewAttAllowed, 1000);
+
+        function getExtension(filename) {
+            var parts = filename.split('.');
+            return parts[parts.length - 1];
+        }
+
+        function isImage(filename) {
+            var ext = getExtension(filename);
+            switch (ext.toLowerCase()) {
+                case 'jpg':
+                case 'png':
+                    return true;
+            }
+            return false;
+        }
+
+        function makeGrayscale(image) {
+            image.classList.add("grayscale");
+        }
+
+        function revertGrayscale(image) {
+            image.classList.remove("grayscale");
+        }
+
+        $(document).ready(function () {
+            $('#editPostForm').on('hide.bs.modal', function () {
+                deletedImages = "";
+                allowedNewImages = @Model.Attachments.Count() - 5;
+            });
+
+            $('#editForm').submit(function () {
+                if (!deletedImages == "") {
+                    $('#deletedAttachments').val(deletedImages)
+                }
+                else{
+                    $('#deletedAttachments').val("0")
+                }
+            });
+
+            $("#newAttachments").on("change", function () {
+                if ($("#newAttachments")[0].files.length > allowedNewImages) {
+                    alert("Too much images");
+                    this.form.reset();
+                }
+
+                if (Array.from($("#newAttachments")[0].files).some(x => (x.size > 5242880))) {
+                    alert("size error");
+                    this.form.reset();
+                }
+
+                if (Array.from($("#newAttachments")[0].files).some(x => !isImage(x.name))) {
+                    alert("type error");
+                    this.form.reset();
+                }
+                else {
+                    var newImages = document.getElementById('newAttachments').files.lenght;
+                    allowedNewImages += newImages;
+                }
+
+            });
+
+            $('[data-toggle="tooltip"]').tooltip();
+        });
+
     </script>
 }
-

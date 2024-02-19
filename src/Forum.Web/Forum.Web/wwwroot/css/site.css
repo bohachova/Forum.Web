@@ -161,3 +161,41 @@ a {
 .link-info:hover{
     color: cadetblue;
 }
+
+.imageGallery {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.imageContainer {
+    position: relative;
+    margin: 5px;
+    display: block;
+}
+
+.delete-icon {
+    position: relative;
+    top: 5px;
+    right: 5px;
+    cursor: pointer;
+    background-color: rgba(255, 255, 255, 0.5);
+    padding: 5px;
+    border-radius: 50%;
+    vertical-align: middle;
+}
+.image-container img {
+    display: block;
+    height: auto;
+}
+
+.image {
+    transition: filter 0.3s ease;
+}
+
+.grayscale {
+    filter: grayscale(100%);
+}
+
+.hiddenImage{
+    display: none;
+}

@@ -4,6 +4,7 @@ using Forum.Web.Models.Responses;
 using Forum.Web.Models.TopicPost;
 using Forum.Web.Models.User;
 using Newtonsoft.Json;
+using System.ComponentModel.Design;
 using System.IO;
 using System.IO.Pipes;
 using System.Net.Http.Headers;
@@ -205,6 +206,39 @@ namespace Forum.Web.Services
             var response = await client.PostAsync($"{client.BaseAddress}Topics/ViewPost/{postId}", content);
             string s = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<Post>(s);
+        }
+
+        public async Task<Response> EditPost(PostEditModel post, string token)
+        {
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            MultipartFormDataContent content = new()
+            {
+                {new StringContent(post.Id.ToString()), "Id" },
+                { new StringContent(post.Header), "Header" },
+                { new StringContent(post.Text), "Text" },
+                { new StringContent(post.DeletedAttachments), "DeletedAttachmentsString" }
+
+            };
+
+            if (post.NewAttachments.Any())
+            {
+                foreach (var file in post.NewAttachments)
+                {
+                    Stream stream = file.OpenReadStream();
+                    FormFile formFile = new(stream, 0, stream.Length, file.FileName, file.FileName)
+                    {
+                        Headers = new HeaderDictionary(),
+                        ContentType = file.ContentType
+                    };
+
+                    content.Add(new StreamContent(stream), "NewAttachments", file.FileName);
+                }
+            }
+
+            var response = await client.PostAsync($"{client.BaseAddress}Topics/EditPost", content);
+            string s = await response.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<Response>(s);
         }
     }
 }
