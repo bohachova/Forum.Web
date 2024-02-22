@@ -240,5 +240,14 @@ namespace Forum.Web.Services
             string s = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<Response>(s);
         }
+
+        public async Task<Response> EditComment(CommentEditModel comment, string token)
+        {
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            HttpContent content = JsonContent.Create(comment);
+            var response = await client.PostAsync($"{client.BaseAddress}Comments/EditComment", content);
+            string s = await response.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<Response>(s);
+        }
     }
 }

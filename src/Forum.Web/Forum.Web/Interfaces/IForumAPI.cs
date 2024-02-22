@@ -25,5 +25,6 @@ namespace Forum.Web.Interfaces
         Task<Response> DeleteComment (int commentId,  string token);
         Task<Post> ViewPost(int postId, PaginationSettings settings, string token);
         Task<Response> EditPost (PostEditModel post,  string token);
+        Task<Response> EditComment (CommentEditModel comment, string token);
     }
 }
