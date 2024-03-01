@@ -9,6 +9,7 @@ using System.IO;
 using System.IO.Pipes;
 using System.Net.Http.Headers;
 using System.Reflection;
+using System.Xml.Linq;
 
 namespace Forum.Web.Services
 {
@@ -248,6 +249,24 @@ namespace Forum.Web.Services
             var response = await client.PostAsync($"{client.BaseAddress}Comments/EditComment", content);
             string s = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<Response>(s);
+        }
+
+        public async Task<ReactionsResponse> PostReaction(Reaction reaction, string token)
+        {
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            HttpContent content = JsonContent.Create(reaction);
+            var response = await client.PostAsync($"{client.BaseAddress}Topics/PostReaction", content);
+            string s = await response.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<ReactionsResponse>(s);
+        }
+
+        public async Task<ReactionsResponse> CommentReaction(Reaction reaction, string token)
+        {
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            HttpContent content = JsonContent.Create(reaction);
+            var response = await client.PostAsync($"{client.BaseAddress}Comments/CommentReaction", content);
+            string s = await response.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<ReactionsResponse>(s);
         }
     }
 }

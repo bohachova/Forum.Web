@@ -199,3 +199,16 @@ a {
 .hiddenImage{
     display: none;
 }
+
+.reactionBtn {
+    background: none;
+    border: none;
+    padding: 0;
+    float: right;
+    margin-right: 5px;
+    display: inline;
+}
+
+.reactionBtn :hover {
+    cursor: pointer;
+}

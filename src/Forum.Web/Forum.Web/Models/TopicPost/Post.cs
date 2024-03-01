@@ -23,5 +23,6 @@ namespace Forum.Web.Models.TopicPost
         public PaginatedList<Comment> Comments { get; set; }
         public bool WasEdited { get; set; }
         public DateTime? LastEdited { get; set; }
+        public List<Reaction> Reactions { get; set; } = new List<Reaction>();
     }
 }

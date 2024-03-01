@@ -26,5 +26,7 @@ namespace Forum.Web.Interfaces
         Task<Post> ViewPost(int postId, PaginationSettings settings, string token);
         Task<Response> EditPost (PostEditModel post,  string token);
         Task<Response> EditComment (CommentEditModel comment, string token);
+        Task<ReactionsResponse> PostReaction (Reaction reaction, string token);
+        Task<ReactionsResponse> CommentReaction (Reaction reaction, string token);
     }
 }

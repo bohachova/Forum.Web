@@ -94,6 +94,20 @@ namespace Forum.Web.Controllers
             await forumAPI.EditPost(post, token);
             return RedirectToAction("GetTopicPosts", new { PageNumber = position.PageNumber, TopicId = position.TopicId, TopicTitle = position.TopicTitle });
         }
-
+        [Authorize]
+        [HttpPost]
+        public async Task<IActionResult> PostReaction(Reaction reaction)
+        {
+            var token = User.GetToken();
+            var result = await forumAPI.PostReaction(reaction, token);
+            if (result.IsSuccess)
+            {
+                int likes = result.Likes;
+                int dislikes = result.Dislikes;
+                return Json(new { likes, dislikes });
+            }
+            else
+                return null;
+        }
     }
 }
