@@ -92,7 +92,7 @@ namespace Forum.Web.Controllers
         {
             var token = User.GetToken();
             await forumAPI.EditPost(post, token);
-            return RedirectToAction("GetTopicPosts", new { PageNumber = position.PageNumber, TopicId = position.TopicId, TopicTitle = position.TopicTitle });
+            return RedirectToAction("ViewPost", new { PageNumber = position.PageNumber, TopicId = position.TopicId, TopicTitle = position.TopicTitle , PostId = post.Id});
         }
         [Authorize]
         [HttpPost]
