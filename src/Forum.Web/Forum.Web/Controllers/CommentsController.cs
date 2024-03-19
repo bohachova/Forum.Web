@@ -45,5 +45,31 @@ namespace Forum.Web.Controllers
             }
             return BadRequest();
         }
+        [Authorize]
+        [HttpPost]
+        public async Task<IActionResult> EditComment (CommentEditModel comment, CurrentPaginationPositionSettings position)
+        {
+            if (ModelState.IsValid)
+            {
+                var token = User.GetToken();
+                await forumAPI.EditComment(comment, token);
+            }
+            return RedirectToAction("ViewPost", "Topics", new { PageNumber = position.PageNumber, TopicId = position.TopicId, TopicTitle = position.TopicTitle, PostId = position.PostId });
+        }
+        [Authorize]
+        [HttpPost]
+        public async Task<IActionResult> CommentReaction(Reaction reaction)
+        {
+            var token = User.GetToken();
+            var result = await forumAPI.CommentReaction(reaction, token);
+            if (result.IsSuccess)
+            {
+                int likes = result.Likes;
+                int dislikes = result.Dislikes;
+                return Json(new { likes, dislikes });
+            }
+            else
+                return null;
+        }
     }
 }
