@@ -20,6 +20,9 @@ namespace Forum.Web.Models.TopicPost
         public UserModel Author { get; set; }
         [Required]
         public int TopicId { get; set; }
-        public PaginatedList<Comment> Comments { get; set; } 
+        public PaginatedList<Comment> Comments { get; set; }
+        public bool WasEdited { get; set; }
+        public DateTime? LastEdited { get; set; }
+        public List<Reaction> Reactions { get; set; } = new List<Reaction>();
     }
 }

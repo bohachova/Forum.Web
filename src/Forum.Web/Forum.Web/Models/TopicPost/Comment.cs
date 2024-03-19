@@ -19,5 +19,9 @@ namespace Forum.Web.Models.TopicPost
         public bool HasChildComments { get; set; }
         public int ParentAuthorId { get; set; }
         public CurrentPaginationPositionSettings? Position { get; set; }
+        public bool WasEdited { get; set; }
+        public DateTime? LastEdited { get; set; }
+        public List<Reaction> Reactions { get; set; } = new List<Reaction>();
+
     }
 }

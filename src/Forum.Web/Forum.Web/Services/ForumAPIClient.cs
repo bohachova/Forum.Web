@@ -4,7 +4,12 @@ using Forum.Web.Models.Responses;
 using Forum.Web.Models.TopicPost;
 using Forum.Web.Models.User;
 using Newtonsoft.Json;
+using System.ComponentModel.Design;
+using System.IO;
+using System.IO.Pipes;
 using System.Net.Http.Headers;
+using System.Reflection;
+using System.Xml.Linq;
 
 namespace Forum.Web.Services
 {
@@ -210,6 +215,66 @@ namespace Forum.Web.Services
             var response = await client.GetAsync($"{client.BaseAddress}Profiles/DeleteUser/{userId}");
             string s = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<Response>(s);
+        }
+
+        public async Task<Response> EditPost(PostEditModel post, string token)
+        {
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            MultipartFormDataContent content = new()
+            {
+                {new StringContent(post.Id.ToString()), "Id" },
+                { new StringContent(post.Header), "Header" },
+                { new StringContent(post.Text), "Text" },
+                { new StringContent(post.DeletedAttachments), "DeletedAttachmentsString" }
+
+            };
+
+            if (post.NewAttachments.Any())
+            {
+                foreach (var file in post.NewAttachments)
+                {
+                    Stream stream = file.OpenReadStream();
+                    FormFile formFile = new(stream, 0, stream.Length, file.FileName, file.FileName)
+                    {
+                        Headers = new HeaderDictionary(),
+                        ContentType = file.ContentType
+                    };
+
+                    content.Add(new StreamContent(stream), "NewAttachments", file.FileName);
+                }
+            }
+
+            var response = await client.PostAsync($"{client.BaseAddress}Topics/EditPost", content);
+            string s = await response.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<Response>(s);
+        }
+
+        public async Task<Response> EditComment(CommentEditModel comment, string token)
+        {
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            HttpContent content = JsonContent.Create(comment);
+            var response = await client.PostAsync($"{client.BaseAddress}Comments/EditComment", content);
+            string s = await response.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<Response>(s);
+        }
+
+        public async Task<ReactionsResponse> PostReaction(Reaction reaction, string token)
+        {
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            HttpContent content = JsonContent.Create(reaction);
+            var response = await client.PostAsync($"{client.BaseAddress}Topics/PostReaction", content);
+            string s = await response.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<ReactionsResponse>(s);
+        }
+
+        public async Task<ReactionsResponse> CommentReaction(Reaction reaction, string token)
+        {
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            HttpContent content = JsonContent.Create(reaction);
+            var response = await client.PostAsync($"{client.BaseAddress}Comments/CommentReaction", content);
+            string s = await response.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<ReactionsResponse>(s);
         }
     }
 }

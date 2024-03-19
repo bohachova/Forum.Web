@@ -86,7 +86,28 @@ namespace Forum.Web.Controllers
             ViewBag.TopicTitle = position.TopicTitle;
             return View("PostPage", post);
         }
-
-
+        [Authorize]
+        [HttpPost]
+        public async Task<IActionResult> EditPost(PostEditModel post, CurrentPaginationPositionSettings position)
+        {
+            var token = User.GetToken();
+            await forumAPI.EditPost(post, token);
+            return RedirectToAction("ViewPost", new { PageNumber = position.PageNumber, TopicId = position.TopicId, TopicTitle = position.TopicTitle , PostId = post.Id});
+        }
+        [Authorize]
+        [HttpPost]
+        public async Task<IActionResult> PostReaction(Reaction reaction)
+        {
+            var token = User.GetToken();
+            var result = await forumAPI.PostReaction(reaction, token);
+            if (result.IsSuccess)
+            {
+                int likes = result.Likes;
+                int dislikes = result.Dislikes;
+                return Json(new { likes, dislikes });
+            }
+            else
+                return null;
+        }
     }
 }
