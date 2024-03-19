@@ -3,6 +3,7 @@ using Forum.Web.Extensions;
 using Forum.Web.Interfaces;
 using Forum.Web.Models.Pagination;
 using Forum.Web.Models.User;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,6 +13,7 @@ namespace Forum.Web.Controllers
     {
         private readonly IForumAPI forumAPI;
         private readonly IPaginationSettingsConfiguration settings;
+
         public UserProfilesController(IForumAPI forumAPI, IPaginationSettingsConfiguration settings)
         {
             this.forumAPI = forumAPI;
@@ -115,8 +117,26 @@ namespace Forum.Web.Controllers
         {
             var token = User.GetToken();
             var userId = User.GetUserId();
-            var result = forumAPI.DeleteUserPhoto(userId, token);
+            await forumAPI.DeleteUserPhoto(userId, token);
             return RedirectToAction("GetMyProfile");
+        }
+        [Authorize]
+        [HttpPost]
+        public async Task<IActionResult> DeleteUser (int userId)
+        {
+            var token = User.GetToken();
+            await forumAPI.DeleteUser(userId, token);
+            return RedirectToAction("GetAllProfiles");
+            // мб передать номер страницы
+        }
+        [Authorize]
+        [HttpGet]
+        public async Task<IActionResult> DeleteMyProfile()
+        {
+            var token = User.GetToken();
+            var userId = User.GetUserId();
+            await forumAPI.DeleteUser(userId, token);
+            return RedirectToAction("Logout", "Authorization");
         }
     }
 }

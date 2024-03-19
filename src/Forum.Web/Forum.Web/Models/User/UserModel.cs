@@ -25,5 +25,6 @@ namespace Forum.Web.Models.User
         public List<Topic> CreatedTopics { get; set; } = new List<Topic>();
         public List<Post> Posts { get; set; } = new List<Post>();
         public List<Comment> Comments { get; set; } = new List<Comment>();
+        public bool DeletedUser { get; set; } = false;
     }
 }

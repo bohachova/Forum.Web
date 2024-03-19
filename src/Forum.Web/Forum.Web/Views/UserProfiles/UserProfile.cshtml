@@ -104,6 +104,19 @@
             </div>
         }
         <div>
+            @if (User.IsInRole("Admin"))
+            {
+                <form method="post" asp-controller="UserProfiles" asp-action="DeleteUser" id="deleteUserForm">
+                    <input type="hidden" name="userId" value="@Model.Id"/>
+                    <button type="submit" class="btn btn-outline-danger" id="submitBtn"> DeleteUser </button>
+                </form>
+            }
+            else
+            {
+                <a class="btn btn-outline-danger" asp-controller="UsersProfile" asp-action="DeleteMyProfile" id="submitLinkBtn"></a>
+            }
+        </div>
+        <div>
             @if (ViewBag.ErrorMessage != null)
             {
                 <div class="alert alert-danger" role="alert">
@@ -113,3 +126,53 @@
         </div>
     </div>
 </div>
+
+<div id="deleteModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Confirm to delete</h4>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete profile?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" id="confirmButton" class="btn btn-primary">Ok</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $('#deleteUserForm').submit(function (e) {
+            e.preventDefault(); 
+            $('#deleteModal').modal('show'); 
+
+            $('#confirmButton').click(function () {
+                $('#deleteModal').modal('hide');
+                $('#deleteUserForm').unbind('submit').submit(); 
+            });
+        });
+    });
+
+    $(document).ready(function () {
+        
+        $('#submitLinkBtn').click(function (e) {
+            e.preventDefault(); 
+            var controller = $(this).data('controller');
+            var action = $(this).data('action');
+            var url = '/' + controller + '/' + action;
+
+            $('#deleteModal').modal('show');
+
+            $('#confirmButton').click(function () {
+                $('#deleteModal').modal('hide');
+                window.location.href = url; 
+            });
+        });
+    });
+
+</script>

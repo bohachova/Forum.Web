@@ -4,10 +4,7 @@ using Forum.Web.Models.Responses;
 using Forum.Web.Models.TopicPost;
 using Forum.Web.Models.User;
 using Newtonsoft.Json;
-using System.IO;
-using System.IO.Pipes;
 using System.Net.Http.Headers;
-using System.Reflection;
 
 namespace Forum.Web.Services
 {
@@ -205,6 +202,14 @@ namespace Forum.Web.Services
             var response = await client.PostAsync($"{client.BaseAddress}Topics/ViewPost/{postId}", content);
             string s = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<Post>(s);
+        }
+
+        public async Task<Response> DeleteUser(int userId, string token)
+        {
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            var response = await client.GetAsync($"{client.BaseAddress}Profiles/DeleteUser/{userId}");
+            string s = await response.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<Response>(s);
         }
     }
 }

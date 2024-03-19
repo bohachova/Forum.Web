@@ -45,8 +45,15 @@
                                             <input type="hidden" value="@post.Id">
                                             <input type="hidden" value="@post.TopicId">
                                             <input type="hidden" value="@post.AuthorId">
-                                            <p style="margin-bottom: 5px;">@post.Author.Username</p>
-                                            @if (post.Author.UserPhoto != null)
+                                            @if(post.Author.DeletedUser)
+                                            {
+                                                <p style="margin-bottom: 5px; color: indianred;"> Deleted User </p>
+                                            }
+                                            else
+                                            {
+                                                <p style="margin-bottom: 5px;">@post.Author.Username</p>
+                                            }
+                                            @if (post.Author.UserPhoto != null && !post.Author.DeletedUser)
                                             {
                                                 <img src="data:image/jpeg;base64,@post.Author.UserPhoto" class="img-fluid" style="height:70px;">
                                             }
