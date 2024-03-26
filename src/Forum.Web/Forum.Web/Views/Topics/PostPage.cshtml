@@ -178,11 +178,11 @@
                                                     </svg>
                                                     @if(comment.Parent.Author.DeletedUser)
                                                     {
-                                                        <b>Deleted User <span style="font-size: xx-small; color: grey;">(@comment.Author.UserRole)</span></b>
+                                                        <b>Deleted User</b>
                                                     }
                                                     else
                                                     {
-                                                        <b>@comment.Parent.Author.Username <span style="font-size: xx-small; color: grey;">(@comment.Author.UserRole)</span></b>
+                                                        <b>@comment.Parent.Author.Username</b>
                                                     }
                                                     "@trimmedComment"
                                                 </span>
@@ -200,9 +200,9 @@
                                             }
                                             <span style="float:right; font-size: 10px; color: black;">Published @comment.PublishingTime.ToString("dd.MM.yyyy HH:mm")</span>
                                             @if (comment.WasEdited)
-{
-    <span style="float:right; font-size: 10px; color: black;">Edited @comment.LastEdited.Value.ToString("dd.MM.yyyy HH:mm") // </span>
-}
+                                                {
+                                                    <span style="float:right; font-size: 10px; color: black;">Edited @comment.LastEdited.Value.ToString("dd.MM.yyyy HH:mm") // </span>
+                                                }
                                         </div>
                                         <div class="card-body">
                                             <p class="card-text">@comment.Text</p>

@@ -21,7 +21,7 @@ namespace Forum.Web.Controllers
         }
         [Authorize(Roles ="Admin")]
         [HttpGet]
-        public async Task<IActionResult> GetAllProfiles(int pageNumber)
+        public async Task<IActionResult> GetAllProfiles(int pageNumber = 1)
         {
             var token = User.GetToken();
             var result = await forumAPI.GetAllProfiles(new PaginationSettings { PageNumber = pageNumber, PageSize = settings.UsersPageSize }, token);
@@ -127,7 +127,6 @@ namespace Forum.Web.Controllers
             var token = User.GetToken();
             await forumAPI.DeleteUser(userId, token);
             return RedirectToAction("GetAllProfiles");
-            // мб передать номер страницы
         }
         [Authorize]
         [HttpGet]

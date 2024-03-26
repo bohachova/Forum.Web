@@ -104,16 +104,13 @@
             </div>
         }
         <div>
-            @if (User.IsInRole("Admin"))
+            @if (User.IsInRole("Admin") && User.Claims.FirstOrDefault(x => x.Type == "UserId").Value != Model.Id.ToString())
             {
-                <form method="post" asp-controller="UserProfiles" asp-action="DeleteUser" id="deleteUserForm">
-                    <input type="hidden" name="userId" value="@Model.Id"/>
-                    <button type="submit" class="btn btn-outline-danger" id="submitBtn"> DeleteUser </button>
-                </form>
+                <button class="btn btn-outline-danger" id="deleteUserBtn" style="margin-top: 5px;" onclick="deleteUser()">Delete user</button>
             }
             else
             {
-                <a class="btn btn-outline-danger" asp-controller="UsersProfile" asp-action="DeleteMyProfile" id="submitLinkBtn"></a>
+                <button class="btn btn-outline-danger" id="deleteMyProfileBtn" style="margin-top: 5px;" onclick="deleteMyProfile()"> Delete my profile </button>
             }
         </div>
         <div>
@@ -127,52 +124,43 @@
     </div>
 </div>
 
-<div id="deleteModal" class="modal fade" role="dialog">
+<div class="modal fade" id="deleteUserModal" role="dialog">
     <div class="modal-dialog">
-        <div class="modal-content">
+        <div class="modal-content text-center">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title">Confirm to delete</h4>
+                <h5 class="modal-title">Confirm to delete user</h5>
             </div>
             <div class="modal-body">
-                <p>Are you sure you want to delete profile?</p>
+                <form method="post" asp-controller="UserProfiles" asp-action="DeleteUser">
+                    <input type="hidden" name="userId" value="@Model.Id" />
+                    <button type="submit" class="btn btn-outline-danger" id="submitBtn" style="margin-top: 5px;"> Ok </button>
+                    <button type="button" class="btn btn-outline-secondary" style="margin-top: 5px;"  data-dismiss="modal">Cancel</button>
+                </form>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                <button type="button" id="confirmButton" class="btn btn-primary">Ok</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="deleteMyProfileModal" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content text-center">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirm to delete your profile</h5>
+            </div>
+            <div class="modal-body">
+                <a type="button" class="btn btn-outline-danger" asp-controller="UserProfiles" asp-action="DeleteMyProfile" style="margin-top: 5px;">Ok</a>
+                <button type="button" class="btn btn-outline-secondary" data-dismiss="modal" style="margin-top: 5px;">Cancel</button>
             </div>
         </div>
     </div>
 </div>
 
 <script>
-    $(document).ready(function () {
-        $('#deleteUserForm').submit(function (e) {
-            e.preventDefault(); 
-            $('#deleteModal').modal('show'); 
+        function deleteUser() {
+            $('#deleteUserModal').modal('show');
+        }
 
-            $('#confirmButton').click(function () {
-                $('#deleteModal').modal('hide');
-                $('#deleteUserForm').unbind('submit').submit(); 
-            });
-        });
-    });
-
-    $(document).ready(function () {
-        
-        $('#submitLinkBtn').click(function (e) {
-            e.preventDefault(); 
-            var controller = $(this).data('controller');
-            var action = $(this).data('action');
-            var url = '/' + controller + '/' + action;
-
-            $('#deleteModal').modal('show');
-
-            $('#confirmButton').click(function () {
-                $('#deleteModal').modal('hide');
-                window.location.href = url; 
-            });
-        });
-    });
-
+        function deleteMyProfile() {
+            $('#deleteMyProfileModal').modal('show');
+        }
 </script>
