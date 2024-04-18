@@ -11,6 +11,9 @@
                 <li class="nav-item">
                     <a class="nav-link" aria-current="page" asp-controller="UserProfiles" asp-action="GetAllProfiles" asp-route-pageNumber="1">All users</a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link" aria-current="page" asp-controller="UserProfiles" asp-action="GetBannedUsersList" asp-route-pageNumber="1"> Banned Users </a>
+                </li>
             }
         </ul>
         <div>
@@ -78,11 +81,11 @@
                                         }
                                     </div>
                                     <div class="card-footer text-center">
-                                        @if (Model.AuthorId != int.Parse(User.Claims.FirstOrDefault(x => x.Type == "UserId").Value))
+                                        @if (Model.AuthorId != int.Parse(User.Claims.FirstOrDefault(x => x.Type == "UserId").Value) && !User.Claims.Any(x => x.Type == "MutedUser"))
                                         {
                                             <button class="btn btn-outline-info" style="display:inline;" onclick="openCommentForm()">Reply</button>
                                         }
-                                        @if (Model.Author.Id == int.Parse(User.Claims.FirstOrDefault(x => x.Type == "UserId").Value))
+                                        @if (Model.Author.Id == int.Parse(User.Claims.FirstOrDefault(x => x.Type == "UserId").Value) && !User.Claims.Any(x => x.Type == "MutedUser"))
                                         {
                                             <a class="btn btn-outline-info" style="display: inline; margin-right: 5px;" data-bs-toggle="modal" data-bs-target="#editPostForm"> Edit </a>
                                         }
@@ -210,11 +213,11 @@
                                         <div class="card-footer text-center">
                                             @{DateTime commentEditAllowed = comment.PublishingTime.AddMinutes(5);}
 
-                                            @if (comment.AuthorId != int.Parse(User.Claims.FirstOrDefault(x => x.Type == "UserId").Value) && !comment.Author.DeletedUser)
+                                            @if (comment.AuthorId != int.Parse(User.Claims.FirstOrDefault(x => x.Type == "UserId").Value) && !comment.Author.DeletedUser && !User.Claims.Any(x => x.Type == "MutedUser"))
                                             {
                                                 <button class="btn btn-outline-info" style="display:inline;" onclick="openChildCommentForm('@comment.Id','@comment.AuthorId', '@comment.Author.Username')">Reply</button>
                                             }
-                                            @if (int.Parse(User.Claims.FirstOrDefault(x => x.Type == "UserId").Value) == comment.AuthorId && DateTime.Now < commentEditAllowed)
+                                            @if (int.Parse(User.Claims.FirstOrDefault(x => x.Type == "UserId").Value) == comment.AuthorId && DateTime.Now < commentEditAllowed && !User.Claims.Any(x => x.Type == "MutedUser"))
                                             {
                                                 <button class="btn btn-outline-info" style="display: inline; margin-right: 5px;" onclick="openEditCommentForm('@comment.Text', @comment.Id, @comment.Position.PageNumber)"> Edit </button>
                                             }

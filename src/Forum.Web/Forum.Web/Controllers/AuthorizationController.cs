@@ -56,7 +56,8 @@ namespace Forum.Web.Controllers
                     new Claim(ClaimTypes.Name, jwt.Claims.First(x => x.Type == ClaimTypes.Name).Value), 
                     new Claim(ClaimTypes.Role, jwt.Claims.First(x => x.Type == ClaimTypes.Role).Value),
                     new Claim("JWTToken", result.JWTToken),
-                    new Claim("UserId", jwt.Claims.First(x=> x.Type == "UserId").Value)
+                    new Claim("UserId", jwt.Claims.First(x=> x.Type == "UserId").Value),
+                    new Claim("MutedUser", jwt.Claims.FirstOrDefault(x => x.Type == "MutedUser").Value)
                 };
                 ClaimsIdentity claimsId = new ClaimsIdentity(claims, "ApplicationCookie", ClaimsIdentity.DefaultNameClaimType, ClaimsIdentity.DefaultRoleClaimType);
                 DateTimeOffset expirationTime = DateTimeOffset.Now.AddDays(1);

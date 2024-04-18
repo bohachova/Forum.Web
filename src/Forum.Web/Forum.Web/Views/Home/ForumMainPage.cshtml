@@ -8,8 +8,11 @@
             </li>
             @if(User.IsInRole("Admin"))
             {
-                <li class="nav-item">
+                <li class="nav-item nav-item-border">
                     <a class="nav-link" aria-current="page" asp-controller="UserProfiles" asp-action="GetAllProfiles" asp-route-pageNumber="1">All users</a>
+                </li>
+                <li class="nav-item nav-item-border">
+                    <a class="nav-link" aria-current="page" asp-controller="UserProfiles" asp-action="GetBannedUsersList" asp-route-pageNumber="1"> Banned Users </a>
                 </li>
             }
         </ul>

@@ -5,9 +5,11 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Forum.Web.Models.Pagination;
 using Forum.Web.Configuration.Interfaces;
+using Forum.Web.Filters;
 
 namespace Forum.Web.Controllers
 {
+
     public class TopicsController : Controller
     {
         private readonly IForumAPI forumAPI;
@@ -44,6 +46,7 @@ namespace Forum.Web.Controllers
             return BadRequest();
         }
         [Authorize]
+        [CheckUserAccessFilter]
         [HttpPost]
         public async Task<IActionResult> CreatePost(PostCreationModel post, CurrentPaginationPositionSettings position)
         {
@@ -87,6 +90,7 @@ namespace Forum.Web.Controllers
             return View("PostPage", post);
         }
         [Authorize]
+        [CheckUserAccessFilter]
         [HttpPost]
         public async Task<IActionResult> EditPost(PostEditModel post, CurrentPaginationPositionSettings position)
         {

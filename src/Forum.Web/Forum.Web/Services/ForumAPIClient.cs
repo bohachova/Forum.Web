@@ -1,6 +1,7 @@
 ﻿using Forum.Web.Interfaces;
 using Forum.Web.Models.Pagination;
 using Forum.Web.Models.Responses;
+using Forum.Web.Models.Restrictions;
 using Forum.Web.Models.TopicPost;
 using Forum.Web.Models.User;
 using Newtonsoft.Json;
@@ -275,6 +276,33 @@ namespace Forum.Web.Services
             var response = await client.PostAsync($"{client.BaseAddress}Comments/CommentReaction", content);
             string s = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<ReactionsResponse>(s);
+        }
+
+        public async Task<Response> BanUser(BanData data, string token)
+        {
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            HttpContent content = JsonContent.Create(data);
+            var response = await client.PostAsync($"{client.BaseAddress}Profiles/Ban", content);
+            string s = await response.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<Response>(s);
+        }
+
+        public async Task<Response> UnbanUser(int userId, string token)
+        {
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            HttpContent content = JsonContent.Create(userId);
+            var response = await client.PostAsync($"{client.BaseAddress}Profiles/Unban", content);
+            string s = await response.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<Response>(s);
+        }
+
+        public async Task<PaginatedList<UserModel>> GetBannedUsersList(PaginationSettings settings, string token)
+        {
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            HttpContent content = JsonContent.Create(settings);
+            var response = await client.PostAsync($"{client.BaseAddress}Profiles/BannedUsers", content);
+            string s = await response.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<PaginatedList<UserModel>>(s);
         }
     }
 }

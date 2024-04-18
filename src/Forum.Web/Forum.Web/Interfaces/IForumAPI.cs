@@ -2,6 +2,7 @@
 using Forum.Web.Models.Responses;
 using Forum.Web.Models.Pagination;
 using Forum.Web.Models.TopicPost;
+using Forum.Web.Models.Restrictions;
 
 namespace Forum.Web.Interfaces
 {
@@ -28,6 +29,9 @@ namespace Forum.Web.Interfaces
         Task<Response> EditComment (CommentEditModel comment, string token);
         Task<ReactionsResponse> PostReaction (Reaction reaction, string token);
         Task<ReactionsResponse> CommentReaction (Reaction reaction, string token);
-        Task<Response> DeleteUser (int userId, string token);   
+        Task<Response> DeleteUser (int userId, string token);
+        Task<Response> BanUser(BanData data, string token);
+        Task<Response> UnbanUser(int userId, string token);
+        Task<PaginatedList<UserModel>> GetBannedUsersList(PaginationSettings settings, string token);
     }
 }

@@ -2,6 +2,7 @@
 using Forum.Web.Extensions;
 using Forum.Web.Interfaces;
 using Forum.Web.Models.Pagination;
+using Forum.Web.Models.Restrictions;
 using Forum.Web.Models.User;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
@@ -137,5 +138,38 @@ namespace Forum.Web.Controllers
             await forumAPI.DeleteUser(userId, token);
             return RedirectToAction("Logout", "Authorization");
         }
+        [Authorize(Roles = "Admin")]
+        [HttpPost]
+        public async Task<IActionResult> BanUser(int userId, int banType, int? banTime)
+        {
+            var token = User.GetToken();
+            if(banTime != null)
+            {
+                var time = new TimeSpan((int)banTime, 0, 0, 0);
+                await forumAPI.BanUser(new BanData { UserId = userId, BanType = (Enums.BanType)banType, BanTime = time }, token);
+            }
+            else
+            {
+                await forumAPI.BanUser(new BanData { UserId = userId, BanType = (Enums.BanType)banType}, token);
+            }
+            return RedirectToAction("GetUserProfile", new { userId });
+        }
+        [Authorize(Roles = "Admin")]
+        [HttpGet]
+        public async Task<IActionResult> UnbanUser(int userId)
+        {
+            var token = User.GetToken();
+            var result = await forumAPI.UnbanUser(userId, token);
+            return RedirectToAction("GetUserProfile", new {userId });
+        }
+        [Authorize(Roles = "Admin")]
+        [HttpGet]
+        public async Task<IActionResult> GetBannedUsersList (int pageNumber)
+        {
+            var token = User.GetToken();
+            var result = await forumAPI.GetBannedUsersList(new PaginationSettings { PageNumber = pageNumber, PageSize = settings.UsersPageSize }, token);
+            return View("BannedUsers", result);
+        }
+
     }
 }

@@ -212,3 +212,8 @@ a {
 .reactionBtn :hover {
     cursor: pointer;
 }
+
+.nav-item-border :not(:hover) {
+    border: 1px solid cadetblue;
+    border-radius: 4px 4px 0 0;
+}
