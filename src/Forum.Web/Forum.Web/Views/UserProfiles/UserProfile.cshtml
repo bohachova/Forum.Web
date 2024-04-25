@@ -12,6 +12,12 @@
                     @Html.HiddenFor(x=> x.RegistrationDate)
                     
                 </div>
+                @if(Model.BannedUser)
+                {
+                    <div style="float: right; display: inline; color: indianred; margin-right: 10px;">
+                        <label>Banned until @Model.BanTime.Value.ToString("dd.MM.yyyy")</label>
+                    </div>
+                }
                 @if(Model.UserPhoto != null)
                 {
                     <div class="row-2 form-group">
@@ -104,6 +110,24 @@
             </div>
         }
         <div>
+            @if (User.IsInRole("Admin") && User.Claims.FirstOrDefault(x => x.Type == "UserId").Value != Model.Id.ToString())
+            {
+                <button class="btn btn-outline-danger" id="deleteUserBtn" style="margin-top: 5px; display:inline;" onclick="showModal('deleteUserModal')">Delete user</button>
+                if(Model.BannedUser)
+                {
+                    <button class="btn btn-outline-danger" id="unbanUserBtn" style="margin-top: 5px; display:inline;" onclick="showModal('unbanUserModal')"> Unban user</button>
+                }
+                else
+                {
+                    <button class="btn btn-outline-danger" id="banUserBtn" style="margin-top: 5px; display:inline;" onclick="showModal('banUserModal')">Ban user</button>
+                }
+            }
+            else
+            {
+                <button class="btn btn-outline-danger" id="deleteMyProfileBtn" style="margin-top: 5px;" onclick="showModal('deleteMyProfileModal')"> Delete my profile </button>
+            }
+        </div>
+        <div>
             @if (ViewBag.ErrorMessage != null)
             {
                 <div class="alert alert-danger" role="alert">
@@ -113,3 +137,142 @@
         </div>
     </div>
 </div>
+
+<div class="modal fade" id="deleteUserModal" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content text-center">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirm to delete user</h5>
+            </div>
+            <div class="modal-body">
+                <form method="post" asp-controller="UserProfiles" asp-action="DeleteUser">
+                    <input type="hidden" name="userId" value="@Model.Id" />
+                    <button type="submit" class="btn btn-outline-danger" id="submitBtn" style="margin-top: 5px;"> Ok </button>
+                    <button type="button" class="btn btn-outline-secondary" style="margin-top: 5px;"  onclick="hideModal('deleteUserModal')">Cancel</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="deleteMyProfileModal" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content text-center">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirm to delete your profile</h5>
+            </div>
+            <div class="modal-body">
+                <a type="button" class="btn btn-outline-danger" asp-controller="UserProfiles" asp-action="DeleteMyProfile" style="margin-top: 5px;">Ok</a>
+                <button type="button" class="btn btn-outline-secondary" style="margin-top: 5px;" onclick="hideModal('deleteMyProfileModal')">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="unbanUserModal" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content text-center">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirm to remove user from the ban list</h5>
+            </div>
+            <div class="modal-body">
+                <a type="button" class="btn btn-outline-success" asp-controller="UserProfiles" asp-action="UnbanUser" asp-route-userId="@Model.Id" style="margin-top: 5px;">Ok</a>
+                <button type="button" class="btn btn-outline-secondary" style="margin-top: 5px;" onclick="hideModal('unbanUserModal')">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="banUserModal" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header justify-content-center">
+                <h5 class="modal-title">Choose the ban type and confirm</h5>
+            </div>
+            <div class="modal-body">
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="banRadio" id="muteRadio" onclick="toggleInput()" style="margin-left:40%; margin-right: 3px;" checked />
+                    <label class="form-check-label" for="muteRadio">
+                        Muted User
+                    </label>
+
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="banRadio" id="tempRadio" onclick="toggleInput()" style="margin-left:40%;  margin-right: 3px;" />
+                    <label class="form-check-label" for="tempRadio">
+                        Temporary ban
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="banRadio" id="permRadio" onclick="toggleInput()" style="margin-left:40%;  margin-right: 3px;" />
+                    <label class="form-check-label" for="permRadio">
+                        Permanent ban
+                    </label>
+                </div>
+                <div class="text-center">
+                    <label style="display: inline; margin-right: 5px;">Enter the number of days: </label>
+                    <input type="number" class="form-control" min="1" step="1" id="setTimeInput" style="width:70px; display:inline;">
+                </div>
+                <div class="text-center">
+                    <form method="post" asp-controller="UserProfiles" asp-action="BanUser" id="banUserForm">
+                        <input type="hidden" name="userId" value="@Model.Id" />
+                        <input type="hidden" name="banType" id="banTypeInput" />
+                        <input type="hidden" name="banTime" id="banTimeDays"/>
+                        <button type="button" class="btn btn-outline-success" id="submitBanBtn" style="margin-top: 5px;" onclick="banSubmit()"> Ok </button>
+                        <button type="button" class="btn btn-outline-secondary" style="margin-top: 5px;" onclick="hideModal('banUserModal')">Cancel</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    function showModal(modalId) {
+        $('#' + modalId).modal('show');
+    }
+
+    function hideModal(modalId) {
+        $('#' + modalId).modal('hide');
+    }
+
+    function toggleInput() {
+        var permBanOption = document.getElementById('permRadio');
+        var input = document.getElementById('setTimeInput');
+
+        if (permBanOption.checked) {
+            input.disabled = true;
+        }
+        else{
+            input.disabled = false;
+        }
+    }
+    function banSubmit (){
+        
+
+        var muteBanOption = document.getElementById('muteRadio');
+        var tempBanOption = document.getElementById('tempRadio');
+        var permBanOption = document.getElementById('permRadio');
+
+        var banType = null;
+        if (muteBanOption.checked) {
+            banType = 1;
+        }
+        else if (tempBanOption.checked) {
+            banType = 2;
+        }
+        else if (permBanOption.checked) {
+            banType = 3;
+        }
+
+        document.getElementById('banTypeInput').value = banType;
+
+        var enteredDaysCount = document.getElementById('setTimeInput').value;
+        console.log(enteredDaysCount);
+        document.getElementById('banTimeDays').value = enteredDaysCount;
+
+        document.getElementById('banUserForm').submit();
+    }
+
+</script>

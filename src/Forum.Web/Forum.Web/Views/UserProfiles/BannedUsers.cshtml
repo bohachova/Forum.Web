@@ -6,11 +6,11 @@
             <li class="nav-item nav-item-border">
                 <a class="nav-link" aria-current="page" asp-controller="Home" asp-action="Index">All topics</a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link active" aria-current="page" asp-controller="UserProfiles" asp-action="GetAllProfiles" asp-route-pageNumber="1">All users</a>
-            </li>
             <li class="nav-item nav-item-border">
-                <a class="nav-link" aria-current="page" asp-controller="UserProfiles" asp-action="GetBannedUsersList" asp-route-pageNumber="1"> Banned Users </a>
+                <a class="nav-link" aria-current="page" asp-controller="UserProfiles" asp-action="GetAllProfiles" asp-route-pageNumber="1">All users</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link active" aria-current="page" asp-controller="UserProfiles" asp-action="GetBannedUsersList" asp-route-pageNumber="1"> Banned Users </a>
             </li>
         </ul>
         <div>
@@ -38,6 +38,9 @@
                                         @user.UserRole
                                     </div>
                                     <div class="col">
+                                        @user.BanType.ToString()
+                                    </div>
+                                    <div class="col">
                                         <a class="btn btn-outline-info" asp-controller="UserProfiles" asp-action="GetUserProfile" asp-route-userId="@user.Id">View Profile</a>
                                     </div>
                                 </div>
@@ -45,13 +48,13 @@
                         }
                     </ul>
                 </div>
-             
-            int prevPageLink = Model.HasPreviousPage ? Model.PageIndex - 1 : 1;
-            int nextPageLink = Model.HasNextPage ? Model.PageIndex + 1 : Model.TotalPages;
+
+                int prevPageLink = Model.HasPreviousPage ? Model.PageIndex - 1 : 1;
+                int nextPageLink = Model.HasNextPage ? Model.PageIndex + 1 : Model.TotalPages;
                 <div class="pagination justify-content-center m-3">
-                    @if(Model.HasPreviousPage)
+                    @if (Model.HasPreviousPage)
                     {
-                        <a asp-controller="UserProfiles" asp-action="GetAllProfiles" asp-route-pageNumber="@(prevPageLink)" aria-label="Previous">
+                        <a asp-controller="UserProfiles" asp-action="GetBannedUsersList" asp-route-pageNumber="@(prevPageLink)" aria-label="Previous">
                             <span aria-hidden="true">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-chevron-double-left" viewBox="0 0 16 16">
                                     <path fill-rule="evenodd" d="M8.354 1.646a.5.5 0 0 1 0 .708L2.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z" />
@@ -62,11 +65,11 @@
                     }
                     @for (int i = 1; i <= Model.TotalPages; i++)
                     {
-                        <a style="height:20px; width: 20px; margin: 3px;" asp-controller="UserProfiles" asp-action="GetAllProfiles" asp-route-pageNumber="@i">@i</a>
+                        <a style="height:20px; width: 20px; margin: 3px;" asp-controller="UserProfiles" asp-action="GetBannedUsersList" asp-route-pageNumber="@i">@i</a>
                     }
-                  @if(Model.HasNextPage)
+                    @if (Model.HasNextPage)
                     {
-                        <a asp-controller="UserProfiles" asp-action="GetAllProfiles" asp-route-pageNumber="@(nextPageLink)" aria-label="Next">
+                        <a asp-controller="UserProfiles" asp-action="GetBannedUsersList" asp-route-pageNumber="@(nextPageLink)" aria-label="Next">
                             <span aria-hidden="true">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-chevron-double-right" viewBox="0 0 16 16">
                                     <path fill-rule="evenodd" d="M3.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L9.293 8 3.646 2.354a.5.5 0 0 1 0-.708z" />
@@ -81,7 +84,7 @@
             else
             {
                 <div>
-                    <p class="emptyListTag">No users yet </p>
+                    <p class="emptyListTag">No banned users yet </p>
                 </div>
             }
         </div>

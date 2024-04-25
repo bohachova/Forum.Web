@@ -14,8 +14,12 @@ namespace Forum.Web.Extensions
         public static int GetUserId(this ClaimsPrincipal user)
         {
             var stringId = user.Claims.FirstOrDefault(x => x.Type == "UserId")?.Value;
-            int userId = string.IsNullOrEmpty(stringId) ? 0 : int.Parse(stringId);
-            return userId; 
+            return string.IsNullOrEmpty(stringId) ? 0 : int.Parse(stringId);
+        }
+
+        public static bool IsBanned (this ClaimsPrincipal user)
+        {
+            return user.Claims.Any(x => x.Type == "MutedUser");
         }
     }
 }

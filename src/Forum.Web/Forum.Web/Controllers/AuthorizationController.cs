@@ -58,6 +58,8 @@ namespace Forum.Web.Controllers
                     new Claim("JWTToken", result.JWTToken),
                     new Claim("UserId", jwt.Claims.First(x=> x.Type == "UserId").Value)
                 };
+                if (jwt.Claims.Any(x => x.Type == "MutedUser"))
+                    claims.Add(new Claim("MutedUser", jwt.Claims.FirstOrDefault(x => x.Type == "MutedUser").Value));
                 ClaimsIdentity claimsId = new ClaimsIdentity(claims, "ApplicationCookie", ClaimsIdentity.DefaultNameClaimType, ClaimsIdentity.DefaultRoleClaimType);
                 DateTimeOffset expirationTime = DateTimeOffset.Now.AddDays(1);
                 await accessor.HttpContext!.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsId), new AuthenticationProperties { ExpiresUtc = expirationTime });

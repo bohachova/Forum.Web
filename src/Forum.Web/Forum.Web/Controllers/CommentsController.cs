@@ -4,6 +4,7 @@ using Forum.Web.Models.Pagination;
 using Forum.Web.Models.TopicPost;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Forum.Web.Filters;
 
 namespace Forum.Web.Controllers
 {
@@ -15,6 +16,7 @@ namespace Forum.Web.Controllers
             this.forumAPI = forumAPI;
         }
         [Authorize]
+        [CheckUserAccessFilter]
         [HttpPost]
         public async Task<IActionResult> LeaveComment (Comment comment, CurrentPaginationPositionSettings position)
         {
@@ -46,6 +48,7 @@ namespace Forum.Web.Controllers
             return BadRequest();
         }
         [Authorize]
+        [CheckUserAccessFilter]
         [HttpPost]
         public async Task<IActionResult> EditComment (CommentEditModel comment, CurrentPaginationPositionSettings position)
         {
@@ -73,3 +76,4 @@ namespace Forum.Web.Controllers
         }
     }
 }
+
