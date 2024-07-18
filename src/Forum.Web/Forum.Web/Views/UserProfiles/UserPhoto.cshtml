@@ -11,7 +11,7 @@
             <p> No photo yet</p>
         }
         <p class="d-inline-flex gap-1">
-            @if(User.IsInRole("User"))
+            @if (bool.Parse(ViewBag.ProfileOwner.ToString()))
             {
                 <a class="btn btn-outline-info" data-bs-toggle="collapse" href="#uploadForm" role="button" aria-expanded="false" aria-controls="uploadForm"> Upload New Photo</a>
             }

@@ -22,7 +22,7 @@
                 {
                     <div class="row-2 form-group">
                         <img src="data:image/jpeg;base64,@Model.UserPhoto" class="img-fluid" style="width: 100px;"><br>
-                        @if(User.IsInRole("Admin"))
+                        @if (User.IsInRole("Admin") && User.Claims.FirstOrDefault(x => x.Type == "UserId").Value != Model.Id.ToString())
                         {
                             <a asp-controller="UserProfiles" asp-action="ViewUserPhoto" asp-route-userId="@Model.Id">Change profile photo</a>
                         }
@@ -34,7 +34,7 @@
                 }
                 else
                 {
-                    @if(User.IsInRole("User"))
+                    @if (User.IsInRole("User") || User.Claims.FirstOrDefault(x => x.Type == "UserId").Value == Model.Id.ToString())
                     {
                         <a class="btn btn-outline-info" asp-controller="UserProfiles" asp-action="ViewMyPhoto"> Upload Photo </a>
                     }

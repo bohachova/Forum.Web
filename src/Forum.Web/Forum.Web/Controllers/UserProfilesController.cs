@@ -69,6 +69,7 @@ namespace Forum.Web.Controllers
             var user = await forumAPI.GetUserProfile(userId, token);
             ViewBag.UserId = userId;
             ViewBag.UserPhoto = user.UserPhoto;
+            ViewBag.ProfileOwner = false;
             return View("UserPhoto");
         }
         [Authorize]
@@ -79,6 +80,7 @@ namespace Forum.Web.Controllers
             var userId = User.GetUserId();
             var user = await forumAPI.GetUserProfile(userId, token);
             ViewBag.UserPhoto = user.UserPhoto;
+            ViewBag.ProfileOwner = true;
             return View("UserPhoto");
         }
         [Authorize]

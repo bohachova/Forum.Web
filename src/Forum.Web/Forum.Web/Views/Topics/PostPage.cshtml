@@ -81,13 +81,13 @@
                                         }
                                     </div>
                                     <div class="card-footer text-center">
-                                        @if (Model.AuthorId != int.Parse(User.Claims.FirstOrDefault(x => x.Type == "UserId").Value) && !User.Claims.Any(x => x.Type == "MutedUser"))
+                                        @if (!User.Claims.Any(x => x.Type == "MutedUser"))
                                         {
                                             <button class="btn btn-outline-info" style="display:inline;" onclick="openCommentForm()">Reply</button>
                                         }
                                         @if (Model.Author.Id == int.Parse(User.Claims.FirstOrDefault(x => x.Type == "UserId").Value) && !User.Claims.Any(x => x.Type == "MutedUser"))
                                         {
-                                            <a class="btn btn-outline-info" style="display: inline; margin-right: 5px;" data-bs-toggle="modal" data-bs-target="#editPostForm"> Edit </a>
+                                            <a class="btn btn-outline-light" style="display: inline; margin-right: 5px;" data-bs-toggle="modal" data-bs-target="#editPostForm"> Edit </a>
                                         }
                                         @if (User.IsInRole("Admin") || int.Parse(User.Claims.FirstOrDefault(x => x.Type == "UserId").Value) == Model.AuthorId && !Model.Comments.Items.Any())
                                         {
@@ -219,7 +219,7 @@
                                             }
                                             @if (int.Parse(User.Claims.FirstOrDefault(x => x.Type == "UserId").Value) == comment.AuthorId && DateTime.Now < commentEditAllowed && !User.Claims.Any(x => x.Type == "MutedUser"))
                                             {
-                                                <button class="btn btn-outline-info" style="display: inline; margin-right: 5px;" onclick="openEditCommentForm('@comment.Text', @comment.Id, @comment.Position.PageNumber)"> Edit </button>
+                                                <button class="btn btn-outline-light" style="display: inline; margin-right: 5px;" onclick="openEditCommentForm('@comment.Text', @comment.Id, @comment.Position.PageNumber)"> Edit </button>
                                             }
                                             @if (User.IsInRole("Admin") || int.Parse(User.Claims.FirstOrDefault(x => x.Type == "UserId").Value) == comment.AuthorId && !comment.HasChildComments)
                                             {
@@ -378,8 +378,8 @@
             <div class="modal-body text-center">
                 <form method="post" asp-controller="Topics" asp-action="EditPost" id="editForm" enctype="multipart/form-data">
                     <input type="hidden" name="id" value="@Model.Id" />
-                    <input class="form-control" type="text" name="header" required maxlenght="150" style="width:90%; margin-top:5px; margin-bottom:5px;" value="@Model.Header"/>
-                    <textarea class="form-control" name="text" required maxlength="1000" style="width:90%;">@Model.Text</textarea>
+                    <input class="form-control" type="text" name="header" required maxlenght="150" style="width:100%; margin-top:5px; margin-bottom:5px;" value="@Model.Header"/>
+                    <textarea class="form-control" name="text" required maxlength="1000" style="width:100%;">@Model.Text</textarea>
                     @if (Model.Attachments.Any())
                     {
                         <div class="imageGallery">
@@ -397,7 +397,7 @@
                         </div>
                     }
                     <input type="hidden" id="deletedAttachments" name="deletedAttachments" />
-                    <input class="form-control" type="file" name="newAttachments" id="newAttachments" multiple accept=".jpg, .png" style="display: none; width:80%; text-align: center; margin:auto; margin-top: 10px;"><br />
+                    <input class="form-control" type="file" name="newAttachments" id="newAttachments" multiple accept=".jpg, .png" style="display: none; width:100%; text-align: center; margin:auto; margin-top: 10px;"><br />
                     <input type="hidden" name="pageNumber" value="1" />
                     <input type="hidden" name="topicId" value="@Model.TopicId" />
                     <input type="hidden" name="topicTitle" value="@ViewBag.TopicTitle" />
